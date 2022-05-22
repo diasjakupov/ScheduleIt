@@ -21,14 +21,20 @@ class MainActivity : ComponentActivity() {
             val navHostController = rememberNavController()
             ScheduleItTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                    Scaffold(
-                        topBar = {TopBar()}
-                    ) {
-                        NavigationComposable(navController = navHostController)
-                    }
+                Scaffold(topBar = {
+                    TopBar()
+                }) {
+                    NavigationComposable(navController = navHostController)
                 }
             }
         }
     }
+}
+
+
+@Preview
+@Composable
+fun PreviewActivity() {
+    TopBar()
+    NavigationComposable(navController = rememberNavController())
 }
