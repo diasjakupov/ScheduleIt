@@ -7,8 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
 @Composable
@@ -19,9 +22,18 @@ fun TopBar() {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "To-Do List", modifier = Modifier.padding(top = 8.dp))
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)
+            ) {
+                Text(
+                    text = "TDL", style = TextStyle(
+                        fontSize = 24.sp, fontWeight = FontWeight(900)
+                    )
+                )
+            }
+
             TabsRow()
-            Divider()
         }
     }
 }

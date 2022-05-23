@@ -34,10 +34,9 @@ fun TabsRow() {
         modifier = Modifier
             .padding(top = 8.dp, start = 48.dp, end = 48.dp, bottom = 8.dp)
             .clip(RoundedCornerShape(50.dp)),
-        indicator = { Box() {} },
-        divider = {
-            Divider()
-        }
+        indicator = {},
+        divider = {}
+
     ) {
         tabs.forEachIndexed { index, text ->
             Tab(
