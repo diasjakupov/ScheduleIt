@@ -6,15 +6,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.scheduleit.data.models.TaskForView
-import com.example.scheduleit.ui.main_screen.components.TaskItem
+import com.example.scheduleit.ui.components.TaskItem
 import com.example.scheduleit.ui.theme.ExtremeLightGrey
 
 @Composable
