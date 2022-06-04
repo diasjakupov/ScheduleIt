@@ -1,5 +1,7 @@
 package com.example.scheduleit.ui.components
 
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,8 +28,11 @@ fun CustomTextField(
     isUnderlined: Boolean = false,
     fullScreen: Boolean = true,
     readOnly: Boolean = false,
-    onValueChange: (String) -> Unit
+    isClickable: Boolean = false,
+    onClick: () -> Unit = {},
+    onValueChange: (String) -> Unit = {},
 ) {
+    Log.e("DIALOG", "appear")
     Column() {
         if (isLabelShown) {
             Text(
@@ -58,16 +63,18 @@ fun CustomTextField(
                     }
 
                 }
-
                 it()
             }, modifier = Modifier.padding(bottom = 4.dp)
+
         )
         if (isUnderlined) {
-            Divider(modifier = if (fullScreen) {
-                Modifier.fillMaxWidth()
-            } else {
-                Modifier.width(60.dp)
-            })
+            Divider(
+                modifier = if (fullScreen) {
+                    Modifier.fillMaxWidth()
+                } else {
+                    Modifier.width(60.dp)
+                }
+            )
         }
 
     }

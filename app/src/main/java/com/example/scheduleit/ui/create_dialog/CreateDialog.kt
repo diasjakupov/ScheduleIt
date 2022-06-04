@@ -1,5 +1,7 @@
 package com.example.scheduleit.ui.create_dialog
 
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -20,6 +22,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.scheduleit.ui.components.CalendarPicker
 import com.example.scheduleit.ui.components.ChooseColor
 import com.example.scheduleit.ui.components.CustomTextField
 import com.example.scheduleit.ui.theme.Aqua
@@ -40,6 +43,10 @@ fun CreateDialog(navHostController: NavHostController) {
         mutableStateOf(false)
     }
 
+    val isCalendarShown = remember {
+        mutableStateOf(false)
+    }
+
     if (!isDismissed.value) {
         Dialog(onDismissRequest = {
             navHostController.navigate("main_screen")
@@ -50,6 +57,9 @@ fun CreateDialog(navHostController: NavHostController) {
                     .fillMaxHeight(0.95f)
                     .fillMaxWidth(0.9f)
             ) {
+                if (isCalendarShown.value){
+                    CalendarPicker()
+                }
                 //TODO(apply logic and implement date picker)
                 Column(verticalArrangement = Arrangement.SpaceBetween) {
                     Column(
@@ -104,7 +114,9 @@ fun CreateDialog(navHostController: NavHostController) {
                             Spacer(modifier = Modifier.height(48.dp))
 
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    ,
                                 horizontalArrangement = Arrangement.SpaceAround
                             ) {
                                 CustomTextField(
@@ -113,7 +125,10 @@ fun CreateDialog(navHostController: NavHostController) {
                                     isUnderlined = true,
                                     readOnly = true,
                                     fullScreen = false,
-                                    onValueChange = {
+                                    isClickable = true,
+                                    onClick = {
+                                        Log.e("DIALOG CALENDAR", "${isCalendarShown.value}")
+                                        isCalendarShown.value=!isCalendarShown.value
                                     })
                                 CustomTextField(
                                     value = "",
@@ -142,6 +157,7 @@ fun CreateDialog(navHostController: NavHostController) {
                                 isUnderlined = true,
                                 label = "Notification",
                                 isLabelShown = true,
+
                                 onValueChange = {})
 
                             Spacer(modifier = Modifier.height(48.dp))
@@ -169,6 +185,7 @@ fun CreateDialog(navHostController: NavHostController) {
                         )
                     }
                 }
+
             }
         }
     }
