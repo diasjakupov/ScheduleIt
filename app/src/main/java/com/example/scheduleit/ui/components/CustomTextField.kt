@@ -26,59 +26,49 @@ fun CustomTextField(
     isLabelShown: Boolean = false,
     label: String = "",
     isUnderlined: Boolean = false,
-    fullScreen: Boolean = true,
     readOnly: Boolean = false,
-    isClickable: Boolean = false,
-    onClick: () -> Unit = {},
+    decorationBoxModifier: Modifier = Modifier.fillMaxWidth(),
     onValueChange: (String) -> Unit = {},
 ) {
-    Log.e("DIALOG", "appear")
-    Column() {
-        if (isLabelShown) {
-            Text(
-                label, style = TextStyle(
-                    fontWeight = FontWeight(500),
-                    fontSize = 18.sp
-                ), modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
-        BasicTextField(
-            value = value,
-            readOnly = readOnly,
-            onValueChange = onValueChange,
-            decorationBox = {
-                Column(
-                    modifier = if (fullScreen) {
-                        Modifier.fillMaxWidth()
-                    } else {
-                        Modifier.width(60.dp)
+
+        Column() {
+            if (isLabelShown) {
+                Text(
+                    label, style = TextStyle(
+                        fontWeight = FontWeight(500),
+                        fontSize = 18.sp
+                    ), modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+            BasicTextField(
+                value = value,
+                readOnly = readOnly,
+                onValueChange = onValueChange,
+                decorationBox = {
+                    Column(
+                        modifier = decorationBoxModifier
+                    ) {
+                        if (value.isEmpty()) {
+                            Text(
+                                text = placeholder,
+                                color = Color.LightGray,
+                                fontSize = 14.sp
+                            )
+                        }
                     }
-                ) {
-                    if (value.isEmpty()) {
-                        Text(
-                            text = placeholder,
-                            color = Color.LightGray,
-                            fontSize = 14.sp
-                        )
-                    }
-
-                }
-                it()
-            }, modifier = Modifier.padding(bottom = 4.dp)
-
-        )
-        if (isUnderlined) {
-            Divider(
-                modifier = if (fullScreen) {
-                    Modifier.fillMaxWidth()
-                } else {
-                    Modifier.width(60.dp)
-                }
+                    it()
+                },
+                modifier = Modifier
+                    .padding(bottom = 4.dp)
             )
+            if (isUnderlined) {
+                Divider(
+                    modifier = decorationBoxModifier
+                )
+            }
         }
-
     }
-}
+
 
 
 @Composable
@@ -90,8 +80,8 @@ fun CustomTextFieldPreview() {
             placeholder = "Topic",
             isLabelShown = true,
             label = "Topic",
-            fullScreen = false,
             isUnderlined = true,
+            decorationBoxModifier = Modifier,
             onValueChange = {})
     }
 

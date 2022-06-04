@@ -16,10 +16,7 @@ import com.example.scheduleit.ui.main_screen.MainScreen
 fun NavigationComposable(navController: NavHostController){
     NavHost(navController = navController, startDestination = "main_screen"){
         composable("main_screen"){
-            MainScreen(navController)
-        }
-        composable("create_dialog"){
-            CreateDialog(navController)
+            MainScreen()
         }
     }
 }
