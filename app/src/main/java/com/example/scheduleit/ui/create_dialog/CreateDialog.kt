@@ -42,7 +42,11 @@ fun CreateDialog(onDismissRequest: () -> Unit) {
     val isCalendarShown = remember {
         mutableStateOf(false)
     }
-
+    if (isCalendarShown.value) {
+        CalendarPicker() {
+            isCalendarShown.value = false
+        }
+    }
 
     Dialog(
         onDismissRequest = {
@@ -60,11 +64,8 @@ fun CreateDialog(onDismissRequest: () -> Unit) {
                 .fillMaxHeight(0.95f)
                 .fillMaxWidth(0.9f)
         ) {
-            if (isCalendarShown.value) {
-                CalendarPicker(){
-                    isCalendarShown.value = false
-                }
-            }
+
+
             //TODO(apply logic and implement date picker)
             Column(verticalArrangement = Arrangement.SpaceBetween) {
                 Column(
@@ -128,25 +129,31 @@ fun CreateDialog(onDismissRequest: () -> Unit) {
                                 placeholder = "Day",
                                 isUnderlined = true,
                                 readOnly = true,
-                                decorationBoxModifier = Modifier.width(60.dp).clickable {
-                                    isCalendarShown.value = true
-                                })
+                                decorationBoxModifier = Modifier
+                                    .width(60.dp)
+                                    .clickable {
+                                        isCalendarShown.value = true
+                                    })
                             CustomTextField(
                                 value = "",
                                 placeholder = "Month",
                                 isUnderlined = true,
                                 readOnly = true,
-                                decorationBoxModifier = Modifier.width(60.dp).clickable {
-                                    isCalendarShown.value = true
-                                })
+                                decorationBoxModifier = Modifier
+                                    .width(60.dp)
+                                    .clickable {
+                                        isCalendarShown.value = true
+                                    })
                             CustomTextField(
                                 value = "",
                                 placeholder = "Year",
                                 isUnderlined = true,
                                 readOnly = true,
-                                decorationBoxModifier = Modifier.width(60.dp).clickable {
-                                    isCalendarShown.value = true
-                                })
+                                decorationBoxModifier = Modifier
+                                    .width(60.dp)
+                                    .clickable {
+                                        isCalendarShown.value = true
+                                    })
                         }
 
                         Spacer(modifier = Modifier.height(48.dp))
@@ -196,6 +203,6 @@ fun CreateDialog(onDismissRequest: () -> Unit) {
 @Preview
 fun CreateDialogPreview() {
     ScheduleItTheme() {
-        CreateDialog(){}
+        CreateDialog() {}
     }
 }

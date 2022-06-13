@@ -21,7 +21,7 @@ import com.example.scheduleit.ui.theme.Aqua
 @Composable
 fun TabsRow() {
     var selectedTabIndex by remember {
-        mutableStateOf(0)
+        mutableStateOf(1)
     }
 
     val tabs by remember {
