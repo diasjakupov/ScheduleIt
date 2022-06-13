@@ -1,11 +1,11 @@
 package com.example.scheduleit.ui.components
 
-import android.util.Log
-import androidx.compose.foundation.clickable
+
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
@@ -27,7 +27,7 @@ fun CustomTextField(
     label: String = "",
     isUnderlined: Boolean = false,
     readOnly: Boolean = false,
-    decorationBoxModifier: Modifier = Modifier.fillMaxWidth(),
+    @SuppressLint("ModifierParameter") decorationBoxModifier: Modifier = Modifier.fillMaxWidth(),
     onValueChange: (String) -> Unit = {},
 ) {
 

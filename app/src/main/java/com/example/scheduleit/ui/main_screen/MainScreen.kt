@@ -8,8 +8,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.scheduleit.ui.components.CreateBtn
 import com.example.scheduleit.ui.create_dialog.CreateDialog
 import com.example.scheduleit.ui.theme.ScheduleItTheme

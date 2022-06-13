@@ -1,8 +1,7 @@
 package com.example.scheduleit.ui.components
 
 
-import android.icu.util.Calendar
-import android.util.Log
+
 import android.widget.CalendarView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,7 +23,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import com.example.scheduleit.data.models.CalendarDateFormat
 import com.example.scheduleit.ui.theme.ScheduleItTheme
-import java.util.*
 
 @Composable
 fun CalendarPicker(onDismiss: () -> Unit) {
@@ -66,8 +64,8 @@ fun CalendarPicker(onDismiss: () -> Unit) {
                 }
                 AndroidView(factory = { context ->
                     val calendarView = CalendarView(context)
+                    //TODO get current date from viewModel and send changes to there
                     calendarView.setOnDateChangeListener { view, year, month, day ->
-                        Log.e("TAG", "reacted to changed date")
                         pickedDate.value = CalendarDateFormat(year, month, day)
                     }
                     calendarView
