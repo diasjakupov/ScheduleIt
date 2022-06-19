@@ -11,8 +11,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.scheduleit.ui.navigation.NavigationComposable
 import com.example.scheduleit.ui.navigation.TopBar
 import com.example.scheduleit.ui.theme.ScheduleItTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 @ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

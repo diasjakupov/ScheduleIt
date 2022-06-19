@@ -2,6 +2,7 @@ package com.example.scheduleit.ui.components
 
 
 
+import android.util.Log
 import android.widget.CalendarView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,19 +22,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
-import com.example.scheduleit.data.models.CalendarDateFormat
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.scheduleit.data.viewModels.CreationFormViewModel
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
 @Composable
-fun CalendarPicker(onDismiss: () -> Unit) {
+fun CalendarPicker(VM: CreationFormViewModel = viewModel(), onDismiss: () -> Unit) {
 
     val isTimePickerShown = remember {
         mutableStateOf(false)
     }
-    val pickedDate = remember {
-        mutableStateOf(CalendarDateFormat(0,0,0))
+    val date = remember {
+        mutableStateOf("")
     }
-
     Dialog(onDismissRequest = { onDismiss() }) {
         if (isTimePickerShown.value) {
             TimePicker {
@@ -57,16 +58,16 @@ fun CalendarPicker(onDismiss: () -> Unit) {
                         )
                     )
                     Text(
-                        "November 17, 2022", style = TextStyle(
+                        date.value, style = TextStyle(
                             fontSize = 28.sp, fontWeight = FontWeight(600)
                         )
                     )
                 }
                 AndroidView(factory = { context ->
                     val calendarView = CalendarView(context)
-                    //TODO get current date from viewModel and send changes to there
-                    calendarView.setOnDateChangeListener { view, year, month, day ->
-                        pickedDate.value = CalendarDateFormat(year, month, day)
+                    calendarView.date = VM.pickedDate.value
+                    calendarView.setOnDateChangeListener { _, year, month, day ->
+                        VM.setNewDate(year, month, day)
                     }
                     calendarView
                 }, modifier = Modifier.padding())
@@ -131,6 +132,10 @@ fun CalendarPicker(onDismiss: () -> Unit) {
             }
         }
     }
+
+    LaunchedEffect(key1 = VM.pickedDate.value, block = {
+        date.value = VM.getDateRepresentation()
+    })
 }
 
 
@@ -138,6 +143,6 @@ fun CalendarPicker(onDismiss: () -> Unit) {
 @Preview
 fun CalendarPickerPreview() {
     ScheduleItTheme {
-        CalendarPicker() {}
+        CalendarPicker(viewModel()) {}
     }
 }
