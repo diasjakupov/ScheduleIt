@@ -1,9 +1,11 @@
 package com.example.scheduleit.ui.components
 
+
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
@@ -24,54 +26,49 @@ fun CustomTextField(
     isLabelShown: Boolean = false,
     label: String = "",
     isUnderlined: Boolean = false,
-    fullScreen: Boolean = true,
     readOnly: Boolean = false,
-    onValueChange: (String) -> Unit
+    @SuppressLint("ModifierParameter") decorationBoxModifier: Modifier = Modifier.fillMaxWidth(),
+    onValueChange: (String) -> Unit = {},
 ) {
-    Column() {
-        if (isLabelShown) {
-            Text(
-                label, style = TextStyle(
-                    fontWeight = FontWeight(500),
-                    fontSize = 18.sp
-                ), modifier = Modifier.padding(bottom = 8.dp)
+
+        Column() {
+            if (isLabelShown) {
+                Text(
+                    label, style = TextStyle(
+                        fontWeight = FontWeight(500),
+                        fontSize = 18.sp
+                    ), modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+            BasicTextField(
+                value = value,
+                readOnly = readOnly,
+                onValueChange = onValueChange,
+                decorationBox = {
+                    Column(
+                        modifier = decorationBoxModifier
+                    ) {
+                        if (value.isEmpty()) {
+                            Text(
+                                text = placeholder,
+                                color = Color.LightGray,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                    it()
+                },
+                modifier = Modifier
+                    .padding(bottom = 4.dp)
             )
+            if (isUnderlined) {
+                Divider(
+                    modifier = decorationBoxModifier
+                )
+            }
         }
-        BasicTextField(
-            value = value,
-            readOnly = readOnly,
-            onValueChange = onValueChange,
-            decorationBox = {
-                Column(
-                    modifier = if (fullScreen) {
-                        Modifier.fillMaxWidth()
-                    } else {
-                        Modifier.width(60.dp)
-                    }
-                ) {
-                    if (value.isEmpty()) {
-                        Text(
-                            text = placeholder,
-                            color = Color.LightGray,
-                            fontSize = 14.sp
-                        )
-                    }
-
-                }
-
-                it()
-            }, modifier = Modifier.padding(bottom = 4.dp)
-        )
-        if (isUnderlined) {
-            Divider(modifier = if (fullScreen) {
-                Modifier.fillMaxWidth()
-            } else {
-                Modifier.width(60.dp)
-            })
-        }
-
     }
-}
+
 
 
 @Composable
@@ -83,8 +80,8 @@ fun CustomTextFieldPreview() {
             placeholder = "Topic",
             isLabelShown = true,
             label = "Topic",
-            fullScreen = false,
             isUnderlined = true,
+            decorationBoxModifier = Modifier,
             onValueChange = {})
     }
 

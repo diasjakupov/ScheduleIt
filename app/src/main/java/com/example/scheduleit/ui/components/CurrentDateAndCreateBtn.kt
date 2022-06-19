@@ -15,13 +15,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.scheduleit.ui.theme.Aqua
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
+
 @Composable
-fun CreateBtn(currentDate: String, navHostController: NavHostController) {
+fun CreateBtn(currentDate: String, onClick: ()->Unit) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,7 +38,9 @@ fun CreateBtn(currentDate: String, navHostController: NavHostController) {
             )
         )
         Button(
-            onClick = { navHostController.navigate("create_dialog") },
+            onClick = {
+                    onClick()
+            },
             colors = ButtonDefaults.buttonColors(backgroundColor = Aqua)
         ) {
             Text("Create task", style = TextStyle(color = MaterialTheme.colors.primary))
@@ -51,7 +53,7 @@ fun CreateBtn(currentDate: String, navHostController: NavHostController) {
 @Preview
 fun CreateBtnPreview() {
     ScheduleItTheme() {
-        CreateBtn(currentDate = "23 May 2018", rememberNavController())
+        CreateBtn(currentDate = "23 May 2018"){}
 
     }
 }
