@@ -19,9 +19,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scheduleit.data.viewModels.CreationFormViewModel
-import com.example.scheduleit.ui.components.CalendarPicker
-import com.example.scheduleit.ui.components.ChooseColor
-import com.example.scheduleit.ui.components.CustomTextField
+import com.example.scheduleit.ui.components.*
+import com.example.scheduleit.ui.state.CreateDialogUIState
 import com.example.scheduleit.ui.theme.Aqua
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
@@ -30,163 +29,168 @@ import com.example.scheduleit.ui.theme.ScheduleItTheme
 @Composable
 fun CreateDialog(VM: CreationFormViewModel = viewModel(), onDismissRequest: () -> Unit) {
     //reset initial data in VM
-    LaunchedEffect(true){
+    LaunchedEffect(true) {
         VM.reset()
     }
 
     val isCalendarShown = remember {
         mutableStateOf(false)
     }
-
-    //showing calendar dialog if it is necessary
-    if (isCalendarShown.value) {
-        CalendarPicker(VM) {
-            isCalendarShown.value = false
-        }
+    val isValid = remember {
+        mutableStateOf(true)
     }
 
-    Dialog(
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        properties = DialogProperties(
-            dismissOnClickOutside = true,
-            dismissOnBackPress = true,
-            usePlatformDefaultWidth = false
-        )
-    ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxHeight(0.95f)
-                .fillMaxWidth(0.9f)
-        ) {
-            //TODO(apply logic and implement date picker)
-            Column(verticalArrangement = Arrangement.SpaceBetween) {
-                Column(
-                    modifier = Modifier.padding(
-                        start = 26.dp,
-                        top = 32.dp,
-                        end = 26.dp,
-                        bottom = 32.dp
-                    )
+    when (VM.stateUI.value) {
+        is CreateDialogUIState.Success -> {
+            Dialog(
+                onDismissRequest = {
+                    onDismissRequest()
+                },
+                properties = DialogProperties(
+                    dismissOnClickOutside = true,
+                    dismissOnBackPress = true,
+                    usePlatformDefaultWidth = false
+                )
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxHeight(0.95f)
+                        .fillMaxWidth(0.9f)
                 ) {
-                    //Header
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "Create New Tasks", style = TextStyle(
-                                fontWeight = FontWeight(700),
-                                fontSize = 26.sp
+                    Column(verticalArrangement = Arrangement.SpaceBetween) {
+                        Column(
+                            modifier = Modifier.padding(
+                                start = 26.dp,
+                                top = 32.dp,
+                                end = 26.dp,
+                                bottom = 32.dp
                             )
-                        )
-                        Divider(
-                            modifier = Modifier
-                                .padding(top = 8.dp, start = 12.dp),
-                            thickness = 2.dp
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(24.dp))
-                    //Body
-                    Column() {
-                        CustomTextField(
-                            value = VM.title.value,
-                            placeholder = "Write Topic",
-                            isLabelShown = true,
-                            isUnderlined = true,
-                            label = "Topic",
-                            onValueChange = {
-                                VM.setNewTitle(it)
-                            })
-
-                        Spacer(modifier = Modifier.height(32.dp))
-
-                        CustomTextField(
-                            value = VM.desc.value,
-                            placeholder = "Write Description",
-                            label = "Description",
-                            isLabelShown = true,
-                            isUnderlined = true,
-                            onValueChange = {
-                                VM.setNewDesc(it)
-                            })
-
-                        Spacer(modifier = Modifier.height(48.dp))
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceAround
                         ) {
-                            CustomTextField(
-                                value = "",
-                                placeholder = "Day",
-                                isUnderlined = true,
-                                readOnly = true,
-                                decorationBoxModifier = Modifier
-                                    .width(60.dp)
-                                    .clickable {
-                                        isCalendarShown.value = true
+                            //Header
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    "Create New Tasks", style = TextStyle(
+                                        fontWeight = FontWeight(700),
+                                        fontSize = 26.sp
+                                    )
+                                )
+                                Divider(
+                                    modifier = Modifier
+                                        .padding(top = 8.dp, start = 12.dp),
+                                    thickness = 2.dp
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(24.dp))
+                            //Body
+                            Column() {
+                                TextFieldValidator(
+                                    isValid = isValid.value
+                                ) {
+                                    CustomTextField(
+                                        value = VM.title.value,
+                                        placeholder = "Write Topic",
+                                        isLabelShown = true,
+
+                                        label = "Topic",
+                                        onValueChange = {
+                                            isValid.value = true
+                                            VM.setNewTitle(it)
+                                        })
+                                }
+
+                                Spacer(modifier = Modifier.height(32.dp))
+
+                                CustomTextField(
+                                    value = VM.desc.value,
+                                    placeholder = "Write Description",
+                                    label = "Description",
+                                    isLabelShown = true,
+                                    onValueChange = {
+                                        VM.setNewDesc(it)
                                     })
-                            CustomTextField(
-                                value = "",
-                                placeholder = "Month",
-                                isUnderlined = true,
-                                readOnly = true,
-                                decorationBoxModifier = Modifier
-                                    .width(60.dp)
-                                    .clickable {
-                                        isCalendarShown.value = true
-                                    })
-                            CustomTextField(
-                                value = "",
-                                placeholder = "Year",
-                                isUnderlined = true,
-                                readOnly = true,
-                                decorationBoxModifier = Modifier
-                                    .width(60.dp)
-                                    .clickable {
-                                        isCalendarShown.value = true
-                                    })
+
+                                Spacer(modifier = Modifier.height(48.dp))
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    DateField(
+                                        value = VM.formattedPickedDate.value.day.toString(),
+                                        placeholder = "Day",
+                                        modifier = Modifier
+                                            .width(60.dp)
+                                            .clickable {
+                                                isCalendarShown.value = true
+                                            })
+                                    DateField(
+                                        value = VM.formattedPickedDate.value.monthName,
+                                        placeholder = "Day",
+                                        modifier = Modifier
+                                            .width(80.dp)
+                                            .clickable {
+                                                isCalendarShown.value = true
+                                            })
+                                    DateField(
+                                        value = VM.formattedPickedDate.value.year.toString(),
+                                        placeholder = "Day",
+                                        modifier = Modifier
+                                            .width(100.dp)
+                                            .clickable {
+                                                isCalendarShown.value = true
+                                            })
+                                }
+
+                                Spacer(modifier = Modifier.height(48.dp))
+                                //TODO(change value to list picker)
+                                CustomTextField(
+                                    value = "10 min before",
+                                    label = "Notification",
+                                    isLabelShown = true,
+                                    onValueChange = {})
+
+                                Spacer(modifier = Modifier.height(48.dp))
+
+                                ChooseColor()
+                            }
+
                         }
-
-                        Spacer(modifier = Modifier.height(48.dp))
-                        //TODO(change value to list picker)
-                        CustomTextField(
-                            value = "10 min before",
-                            readOnly = true,
-                            isUnderlined = true,
-                            label = "Notification",
-                            isLabelShown = true,
-                            onValueChange = {})
-
-                        Spacer(modifier = Modifier.height(48.dp))
-
-                        ChooseColor()
+                        //Footer
+                        Button(
+                            onClick = {
+                                isValid.value = VM.submit()
+                            },
+                            shape = RectangleShape,
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(14.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Aqua,
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Text(
+                                "ADD", style = TextStyle(
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight(500)
+                                )
+                            )
+                        }
+                        //showing calendar dialog if it is necessary
+                        if (isCalendarShown.value) {
+                            CalendarPicker(VM) {
+                                isCalendarShown.value = false
+                            }
+                        }
                     }
-
-                }
-                //Footer
-                Button(
-                    onClick = { VM.submit() },
-                    shape = RectangleShape,
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(14.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Aqua,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text(
-                        "ADD", style = TextStyle(
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight(500)
-                        )
-                    )
                 }
             }
         }
+        else -> {}
     }
+
 }
 
 

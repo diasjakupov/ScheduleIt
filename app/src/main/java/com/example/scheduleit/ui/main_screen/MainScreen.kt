@@ -20,6 +20,7 @@ fun MainScreen() {
     }
 
 
+
     Surface() {
         Column(
             modifier = Modifier.padding(
@@ -41,6 +42,7 @@ fun MainScreen() {
                     isShown = false
                 }
             }
+
         }
     }
 }

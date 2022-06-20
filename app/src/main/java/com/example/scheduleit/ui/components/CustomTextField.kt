@@ -2,6 +2,7 @@ package com.example.scheduleit.ui.components
 
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,50 +26,36 @@ fun CustomTextField(
     placeholder: String = "",
     isLabelShown: Boolean = false,
     label: String = "",
-    isUnderlined: Boolean = false,
-    readOnly: Boolean = false,
-    @SuppressLint("ModifierParameter") decorationBoxModifier: Modifier = Modifier.fillMaxWidth(),
+
     onValueChange: (String) -> Unit = {},
 ) {
-
-        Column() {
-            if (isLabelShown) {
-                Text(
-                    label, style = TextStyle(
-                        fontWeight = FontWeight(500),
-                        fontSize = 18.sp
-                    ), modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-            BasicTextField(
-                value = value,
-                readOnly = readOnly,
-                onValueChange = onValueChange,
-                decorationBox = {
-                    Column(
-                        modifier = decorationBoxModifier
-                    ) {
-                        if (value.isEmpty()) {
-                            Text(
-                                text = placeholder,
-                                color = Color.LightGray,
-                                fontSize = 14.sp
-                            )
-                        }
-                    }
-                    it()
-                },
-                modifier = Modifier
-                    .padding(bottom = 4.dp)
+    Column() {
+        if (isLabelShown) {
+            Text(
+                label, style = TextStyle(
+                    fontWeight = FontWeight(500),
+                    fontSize = 18.sp
+                ), modifier = Modifier.padding(bottom = 8.dp)
             )
-            if (isUnderlined) {
-                Divider(
-                    modifier = decorationBoxModifier
-                )
-            }
         }
-    }
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            decorationBox = {
+                if (value.isEmpty()) {
+                    Text(
+                        text = placeholder,
+                        color = Color.LightGray,
+                        fontSize = 14.sp
+                    )
+                }
+                it()
+            }, modifier = Modifier.fillMaxWidth())
 
+        Divider()
+
+    }
+}
 
 
 @Composable
@@ -80,8 +67,6 @@ fun CustomTextFieldPreview() {
             placeholder = "Topic",
             isLabelShown = true,
             label = "Topic",
-            isUnderlined = true,
-            decorationBoxModifier = Modifier,
             onValueChange = {})
     }
 

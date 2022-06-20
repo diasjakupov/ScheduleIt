@@ -1,7 +1,6 @@
 package com.example.scheduleit.ui.components
 
 
-
 import android.util.Log
 import android.widget.CalendarView
 import androidx.compose.foundation.background
@@ -12,6 +11,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -22,10 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scheduleit.data.viewModels.CreationFormViewModel
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
+@ExperimentalComposeUiApi
 @Composable
 fun CalendarPicker(VM: CreationFormViewModel = viewModel(), onDismiss: () -> Unit) {
 
@@ -35,14 +37,20 @@ fun CalendarPicker(VM: CreationFormViewModel = viewModel(), onDismiss: () -> Uni
     val date = remember {
         mutableStateOf("")
     }
-    Dialog(onDismissRequest = { onDismiss() }) {
+    Dialog(
+        onDismissRequest = { onDismiss() }, properties = DialogProperties(
+            dismissOnClickOutside = true,
+            dismissOnBackPress = true,
+            usePlatformDefaultWidth = false
+        )
+    ) {
         if (isTimePickerShown.value) {
             TimePicker {
                 isTimePickerShown.value = false
             }
         }
         Surface(shape = RoundedCornerShape(20.dp)) {
-            Column(modifier = Modifier.wrapContentSize()) {
+            Column(modifier = Modifier.fillMaxWidth(0.8f)) {
                 Column(
                     verticalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
@@ -92,7 +100,7 @@ fun CalendarPicker(VM: CreationFormViewModel = viewModel(), onDismiss: () -> Uni
                             }
                     ) {
                         Text(
-                            "00:00", style = TextStyle(
+                            VM.formattedTime.value, style = TextStyle(
                                 fontSize = 20.sp, fontWeight = FontWeight(400)
                             )
                         )
@@ -109,7 +117,7 @@ fun CalendarPicker(VM: CreationFormViewModel = viewModel(), onDismiss: () -> Uni
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
                             .clickable { onDismiss() }
-                            .padding(8.dp)){
+                            .padding(8.dp)) {
                         Text(
                             "Cancel", style = TextStyle(
                                 fontSize = 16.sp, fontWeight = FontWeight(500)
@@ -121,7 +129,7 @@ fun CalendarPicker(VM: CreationFormViewModel = viewModel(), onDismiss: () -> Uni
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
                             .clickable { onDismiss() }
-                            .padding(8.dp)){
+                            .padding(8.dp)) {
                         Text(
                             "ok".uppercase(), style = TextStyle(
                                 fontSize = 16.sp, fontWeight = FontWeight(500)
@@ -139,6 +147,7 @@ fun CalendarPicker(VM: CreationFormViewModel = viewModel(), onDismiss: () -> Uni
 }
 
 
+@ExperimentalComposeUiApi
 @Composable
 @Preview
 fun CalendarPickerPreview() {
