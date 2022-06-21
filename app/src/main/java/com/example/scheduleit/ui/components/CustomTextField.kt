@@ -26,7 +26,6 @@ fun CustomTextField(
     placeholder: String = "",
     isLabelShown: Boolean = false,
     label: String = "",
-
     onValueChange: (String) -> Unit = {},
 ) {
     Column() {

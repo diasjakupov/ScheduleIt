@@ -12,13 +12,13 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun TextFieldValidator(
-    isValid: Boolean ,content: @Composable ()->Unit
+    isValid: Boolean,validationError:String,content: @Composable ()->Unit
 ) {
     Column() {
         content()
         if (!isValid) {
             Text(
-                text = "This field should be filled",
+                text = validationError,
                 modifier = Modifier.padding(top = 8.dp),
                 style = TextStyle(fontSize = 16.sp, color = Red)
             )
