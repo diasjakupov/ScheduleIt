@@ -8,6 +8,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.scheduleit.data.models.CalendarDateFormat
+import com.example.scheduleit.data.models.NotificationDelay
 import com.example.scheduleit.ui.state.CreateDialogUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.lang.Exception
@@ -21,9 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class CreationFormViewModel @Inject constructor() : ViewModel() {
 
-    private val _stateUI: MutableState<CreateDialogUIState> = mutableStateOf(CreateDialogUIState.Loading)
+    private val _stateUI: MutableState<CreateDialogUIState> =
+        mutableStateOf(CreateDialogUIState.Loading)
     val stateUI: State<CreateDialogUIState> get() = _stateUI
-
 
     private val _formattedPickedDate: MutableState<CalendarDateFormat> = mutableStateOf(
         CalendarDateFormat(year = 0, monthName = "Nov", day = 0)
@@ -45,6 +46,51 @@ class CreationFormViewModel @Inject constructor() : ViewModel() {
     val formattedTime: State<String> get() = _formattedTime
 
 
+
+    private val _selectedNotificationDelay: MutableState<Pair<String, Int>> =
+        mutableStateOf(NotificationDelay.BEFORE_10_STR to NotificationDelay.BEFORE_10)
+    val selectedNotificationDelay: State<Pair<String, Int>> get() = _selectedNotificationDelay
+
+    //setter
+    fun setNewDate(year: Int, month: Int, day: Int) {
+        val cal = Calendar.getInstance()
+        val format = SimpleDateFormat("MMM", Locale.getDefault())
+        cal.set(year, month, day)
+        _formattedPickedDate.value = CalendarDateFormat(year, format.format(cal.time), day)
+        _pickedDate.value = cal.timeInMillis
+    }
+
+    fun setNewTitle(title: String) {
+        _title.value = title
+    }
+
+    fun setNewDesc(desc: String) {
+        _desc.value = desc
+    }
+
+    fun setNewTime(hours: Int, minutes: Int) {
+        _formattedTime.value = "${String.format("%02d", hours)}:${String.format("%02d", minutes)}"
+        _time.value = (hours * 60 * 60 * 1000L) + (minutes * 60 * 1000L)
+    }
+
+    fun setNewNotificationDelay(delay: Pair<String, Int>){
+        _selectedNotificationDelay.value = delay
+    }
+
+
+    //formatter
+    fun getDateRepresentation(): String {
+        val format = SimpleDateFormat("MMMM d, y", Locale.getDefault())
+        return format.format(Date(pickedDate.value))
+    }
+
+
+    fun submit(): Boolean {
+        val validation = title.value != ""
+        //TODO(add to database)
+        return validation
+    }
+
     fun reset() {
         _stateUI.value = CreateDialogUIState.Loading
         try {
@@ -59,43 +105,9 @@ class CreationFormViewModel @Inject constructor() : ViewModel() {
             _title.value = ""
             _desc.value = ""
             _stateUI.value = CreateDialogUIState.Success
-        }catch (e: Exception){
+        } catch (e: Exception) {
             _stateUI.value = CreateDialogUIState.Error
         }
 
-    }
-
-    fun setNewDate(year: Int, month: Int, day: Int) {
-        val cal = Calendar.getInstance()
-        val format = SimpleDateFormat("MMM", Locale.getDefault())
-        cal.set(year, month, day)
-        _formattedPickedDate.value = CalendarDateFormat(year, format.format(cal.time), day)
-        _pickedDate.value = cal.timeInMillis
-    }
-
-    fun setNewTitle(title:String){
-        _title.value = title
-    }
-
-    fun setNewDesc(desc: String){
-        _desc.value = desc
-    }
-
-    fun setNewTime(hours:Int, minutes: Int){
-        _formattedTime.value = "${String.format("%02d", hours)}:${String.format("%02d", minutes)}"
-        _time.value = (hours*60*60*1000L) + (minutes*60*1000L)
-    }
-
-
-    fun getDateRepresentation(): String {
-        val format = SimpleDateFormat("MMMM d, y", Locale.getDefault())
-        return format.format(Date(pickedDate.value))
-    }
-
-
-    fun submit(): Boolean{
-        val validation = title.value != ""
-        //TODO(add to database)
-        return validation
     }
 }

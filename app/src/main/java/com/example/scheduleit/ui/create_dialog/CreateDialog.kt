@@ -20,6 +20,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scheduleit.data.viewModels.CreationFormViewModel
 import com.example.scheduleit.ui.components.*
+import com.example.scheduleit.ui.create_dialog.components.NotificationDropDownMenu
 import com.example.scheduleit.ui.state.CreateDialogUIState
 import com.example.scheduleit.ui.theme.Aqua
 import com.example.scheduleit.ui.theme.ScheduleItTheme
@@ -84,9 +85,10 @@ fun CreateDialog(VM: CreationFormViewModel = viewModel(), onDismissRequest: () -
                             }
                             Spacer(modifier = Modifier.height(24.dp))
                             //Body
-                            Column() {
+                            Column {
                                 TextFieldValidator(
-                                    isValid = isValid.value
+                                    isValid = isValid.value,
+                                    validationError = "This field should be filled"
                                 ) {
                                     CustomTextField(
                                         value = VM.title.value,
@@ -146,14 +148,9 @@ fun CreateDialog(VM: CreationFormViewModel = viewModel(), onDismissRequest: () -
 
                                 Spacer(modifier = Modifier.height(48.dp))
                                 //TODO(change value to list picker)
-                                CustomTextField(
-                                    value = "10 min before",
-                                    label = "Notification",
-                                    isLabelShown = true,
-                                    onValueChange = {})
+                                NotificationDropDownMenu()
 
                                 Spacer(modifier = Modifier.height(48.dp))
-
                                 ChooseColor()
                             }
 
