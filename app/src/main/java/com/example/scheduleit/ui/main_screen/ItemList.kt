@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.scheduleit.data.models.TaskForView
+import com.example.scheduleit.ui.wrappers.TaskForView
 import com.example.scheduleit.ui.components.TaskItem
 import com.example.scheduleit.ui.theme.ExtremeLightGrey
 

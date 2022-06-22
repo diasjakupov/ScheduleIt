@@ -55,7 +55,7 @@ fun CreateDialog(VM: CreationFormViewModel = viewModel(), onDismissRequest: () -
             ) {
                 Surface(
                     modifier = Modifier
-                        .fillMaxHeight(0.95f)
+                        .fillMaxHeight(0.9f)
                         .fillMaxWidth(0.9f)
                 ) {
                     Column(verticalArrangement = Arrangement.SpaceBetween) {
@@ -151,7 +151,6 @@ fun CreateDialog(VM: CreationFormViewModel = viewModel(), onDismissRequest: () -
                                 NotificationDropDownMenu()
 
                                 Spacer(modifier = Modifier.height(48.dp))
-                                ChooseColor()
                             }
 
                         }

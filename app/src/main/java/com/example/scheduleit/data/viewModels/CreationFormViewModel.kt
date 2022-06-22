@@ -1,20 +1,16 @@
 package com.example.scheduleit.data.viewModels
 
 
-import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.scheduleit.data.models.CalendarDateFormat
+import com.example.scheduleit.ui.wrappers.CalendarDateFormat
 import com.example.scheduleit.data.models.NotificationDelay
 import com.example.scheduleit.ui.state.CreateDialogUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.lang.Exception
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
@@ -48,7 +44,7 @@ class CreationFormViewModel @Inject constructor() : ViewModel() {
 
 
     private val _selectedNotificationDelay: MutableState<Pair<String, Int>> =
-        mutableStateOf(NotificationDelay.BEFORE_10_STR to NotificationDelay.BEFORE_10)
+        mutableStateOf(NotificationDelay.NOTIFICATION_DELAY.first())
     val selectedNotificationDelay: State<Pair<String, Int>> get() = _selectedNotificationDelay
 
     //setter

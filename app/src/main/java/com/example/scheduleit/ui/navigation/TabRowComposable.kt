@@ -20,7 +20,7 @@ fun TabsRow() {
     }
 
     val tabs by remember {
-        mutableStateOf(listOf("Monthly", "Daily"))
+        mutableStateOf(arrayOf("Monthly", "Daily"))
     }
 
     TabRow(
