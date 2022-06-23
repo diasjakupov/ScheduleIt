@@ -12,11 +12,11 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun TextFieldValidator(
-    isValid: Boolean,validationError:String,content: @Composable ()->Unit
+    value:String?, validationError:String, content: @Composable ()->Unit
 ) {
     Column() {
         content()
-        if (!isValid) {
+        if ((value != null) && value.isEmpty()) {
             Text(
                 text = validationError,
                 modifier = Modifier.padding(top = 8.dp),

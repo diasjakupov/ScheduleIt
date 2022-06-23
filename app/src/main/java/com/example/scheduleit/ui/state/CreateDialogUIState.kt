@@ -2,6 +2,6 @@ package com.example.scheduleit.ui.state
 
 sealed class CreateDialogUIState{
     object Loading:CreateDialogUIState()
-    object Error:CreateDialogUIState()
+    class Error(errorMessage: String):CreateDialogUIState()
     object Success:CreateDialogUIState()
 }

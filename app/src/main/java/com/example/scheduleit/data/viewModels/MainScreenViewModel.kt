@@ -14,16 +14,18 @@ import javax.inject.Inject
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
     repository: NoteRepository
-): ViewModel() {
-    private val timeFormatter = SimpleDateFormat("k:m", Locale.getDefault())
+) : ViewModel() {
+    private val timeFormatter = SimpleDateFormat("kk:mm", Locale.getDefault())
 
-    val noteList = repository.getAllNotes().map { list->
-        list.map { note->
+    val noteList = repository.getAllNotes().map { list ->
+        list.map { note ->
             TaskForView(
                 id = note.id,
                 name = note.title,
                 time = timeFormatter.format(Date(note.datetime))
             )
+        }.sortedBy {
+            it.time
         }
     }
 }

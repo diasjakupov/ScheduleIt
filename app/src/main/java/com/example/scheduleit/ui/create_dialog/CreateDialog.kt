@@ -42,148 +42,153 @@ fun CreateDialog(VM: CreationFormViewModel = hiltViewModel(), onDismissRequest: 
         mutableStateOf(true)
     }
 
-    when (VM.stateUI.value) {
-        is CreateDialogUIState.Success -> {
-            Dialog(
-                onDismissRequest = {
-                    onDismissRequest()
-                },
-                properties = DialogProperties(
-                    dismissOnClickOutside = true,
-                    dismissOnBackPress = true,
-                    usePlatformDefaultWidth = false
-                )
-            ) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxHeight(0.9f)
-                        .fillMaxWidth(0.9f)
+    Dialog(
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        properties = DialogProperties(
+            dismissOnClickOutside = true,
+            dismissOnBackPress = true,
+            usePlatformDefaultWidth = false
+        )
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxHeight(0.9f)
+                .fillMaxWidth(0.9f)
+        ) {
+            Column(verticalArrangement = Arrangement.SpaceBetween) {
+                Column(
+                    modifier = Modifier.padding(
+                        start = 26.dp,
+                        top = 32.dp,
+                        end = 26.dp,
+                        bottom = 32.dp
+                    )
                 ) {
-                    Column(verticalArrangement = Arrangement.SpaceBetween) {
-                        Column(
-                            modifier = Modifier.padding(
-                                start = 26.dp,
-                                top = 32.dp,
-                                end = 26.dp,
-                                bottom = 32.dp
+                    //Header
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Create New Tasks", style = TextStyle(
+                                fontWeight = FontWeight(700),
+                                fontSize = 26.sp
                             )
+                        )
+                        Divider(
+                            modifier = Modifier
+                                .padding(top = 8.dp, start = 12.dp),
+                            thickness = 2.dp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                    //Body
+                    Column {
+                        TextFieldValidator(
+                            value = VM.title.value,
+                            validationError = "This field should be filled"
                         ) {
-                            //Header
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    "Create New Tasks", style = TextStyle(
-                                        fontWeight = FontWeight(700),
-                                        fontSize = 26.sp
-                                    )
-                                )
-                                Divider(
-                                    modifier = Modifier
-                                        .padding(top = 8.dp, start = 12.dp),
-                                    thickness = 2.dp
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(24.dp))
-                            //Body
-                            Column {
-                                TextFieldValidator(
-                                    isValid = isValid.value,
-                                    validationError = "This field should be filled"
-                                ) {
-                                    CustomTextField(
-                                        value = VM.title.value,
-                                        placeholder = "Write Topic",
-                                        isLabelShown = true,
 
-                                        label = "Topic",
-                                        onValueChange = {
-                                            isValid.value = true
-                                            VM.setNewTitle(it)
-                                        })
-                                }
+                            CustomTextField(
+                                value = VM.title.value ?: "",
+                                placeholder = "Write Topic",
+                                isLabelShown = true,
 
-                                Spacer(modifier = Modifier.height(32.dp))
+                                label = "Topic",
+                                onValueChange = { newValue ->
+                                    isValid.value = true
+                                    VM.setNewTitle(newValue)
+                                })
 
-                                CustomTextField(
-                                    value = VM.desc.value,
-                                    placeholder = "Write Description",
-                                    label = "Description",
-                                    isLabelShown = true,
-                                    onValueChange = {
-                                        VM.setNewDesc(it)
+                        }
+
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        CustomTextField(
+                            value = VM.desc.value,
+                            placeholder = "Write Description",
+                            label = "Description",
+                            isLabelShown = true,
+                            onValueChange = {
+                                VM.setNewDesc(it)
+                            })
+
+                        Spacer(modifier = Modifier.height(48.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            DateField(
+                                value = VM.formattedPickedDate.value.day.toString(),
+                                placeholder = "Day",
+                                modifier = Modifier
+                                    .width(60.dp)
+                                    .clickable {
+                                        isCalendarShown.value = true
                                     })
-
-                                Spacer(modifier = Modifier.height(48.dp))
-
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    DateField(
-                                        value = VM.formattedPickedDate.value.day.toString(),
-                                        placeholder = "Day",
-                                        modifier = Modifier
-                                            .width(60.dp)
-                                            .clickable {
-                                                isCalendarShown.value = true
-                                            })
-                                    DateField(
-                                        value = VM.formattedPickedDate.value.monthName,
-                                        placeholder = "Day",
-                                        modifier = Modifier
-                                            .width(80.dp)
-                                            .clickable {
-                                                isCalendarShown.value = true
-                                            })
-                                    DateField(
-                                        value = VM.formattedPickedDate.value.year.toString(),
-                                        placeholder = "Day",
-                                        modifier = Modifier
-                                            .width(100.dp)
-                                            .clickable {
-                                                isCalendarShown.value = true
-                                            })
-                                }
-
-                                Spacer(modifier = Modifier.height(48.dp))
-                                //TODO(change value to list picker)
-                                NotificationDropDownMenu()
-
-                                Spacer(modifier = Modifier.height(48.dp))
-                            }
-
+                            DateField(
+                                value = VM.formattedPickedDate.value.monthName,
+                                placeholder = "Day",
+                                modifier = Modifier
+                                    .width(80.dp)
+                                    .clickable {
+                                        isCalendarShown.value = true
+                                    })
+                            DateField(
+                                value = VM.formattedPickedDate.value.year.toString(),
+                                placeholder = "Day",
+                                modifier = Modifier
+                                    .width(100.dp)
+                                    .clickable {
+                                        isCalendarShown.value = true
+                                    })
                         }
-                        //Footer
-                        Button(
-                            onClick = {
-                                isValid.value = VM.submit()
-                            },
-                            shape = RectangleShape,
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(14.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Aqua,
-                                contentColor = Color.White
-                            )
-                        ) {
-                            Text(
-                                "ADD", style = TextStyle(
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight(500)
-                                )
-                            )
-                        }
-                        //showing calendar dialog if it is necessary
-                        if (isCalendarShown.value) {
-                            CalendarPicker(VM) {
-                                isCalendarShown.value = false
-                            }
-                        }
+
+                        Spacer(modifier = Modifier.height(48.dp))
+                        NotificationDropDownMenu()
+
+                        Spacer(modifier = Modifier.height(48.dp))
+                    }
+
+                }
+                //Footer
+                Button(
+                    onClick = {
+                        isValid.value = VM.submit()
+                        onDismissRequest()
+                    },
+                    shape = RectangleShape,
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(14.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Aqua,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(
+                        "ADD", style = TextStyle(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight(500)
+                        )
+                    )
+                }
+                //showing calendar dialog if it is necessary
+                if (isCalendarShown.value) {
+                    CalendarPicker(VM) {
+                        isCalendarShown.value = false
                     }
                 }
             }
+        }
+    }
+
+    when (VM.stateUI.value) {
+        is CreateDialogUIState.Success -> {}
+        is CreateDialogUIState.Error -> {
+            //TODO add alert dialog
         }
         else -> {}
     }
