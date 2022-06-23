@@ -8,18 +8,19 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.scheduleit.data.viewModels.MainScreenViewModel
 import com.example.scheduleit.ui.components.CreateBtn
 import com.example.scheduleit.ui.create_dialog.CreateDialog
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
 @ExperimentalComposeUiApi
 @Composable
-fun MainScreen() {
+fun MainScreen(VM: MainScreenViewModel = hiltViewModel()) {
     var isShown by remember {
         mutableStateOf(false)
     }
-
-
 
     Surface() {
         Column(
@@ -28,7 +29,7 @@ fun MainScreen() {
             ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CreateBtn(currentDate = "23 May 2022"){
+            CreateBtn(currentDate = "23 May 2022") {
                 isShown = true
             }
             Spacer(
@@ -36,8 +37,8 @@ fun MainScreen() {
                     .fillMaxWidth()
                     .height(32.dp)
             )
-            ItemList(PaddingValues(start = 48.dp, end = 48.dp, top = 18.dp))
-            if (isShown){
+            ItemList(VM, PaddingValues(start = 48.dp, end = 48.dp, top = 18.dp))
+            if (isShown) {
                 CreateDialog() {
                     isShown = false
                 }
@@ -52,7 +53,7 @@ fun MainScreen() {
 @Preview
 fun MainScreenPreview() {
     ScheduleItTheme() {
-        MainScreen()
+        MainScreen(viewModel())
 
     }
 }

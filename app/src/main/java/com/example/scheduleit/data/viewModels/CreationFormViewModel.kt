@@ -1,14 +1,22 @@
 package com.example.scheduleit.data.viewModels
 
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.scheduleit.ui.wrappers.CalendarDateFormat
 import com.example.scheduleit.data.models.NotificationDelay
+import com.example.scheduleit.data.repository.NoteRepository
 import com.example.scheduleit.ui.state.CreateDialogUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
@@ -16,7 +24,9 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class CreationFormViewModel @Inject constructor() : ViewModel() {
+class CreationFormViewModel @Inject constructor(
+    private val repository: NoteRepository
+) : ViewModel() {
 
     private val _stateUI: MutableState<CreateDialogUIState> =
         mutableStateOf(CreateDialogUIState.Loading)
@@ -40,8 +50,6 @@ class CreationFormViewModel @Inject constructor() : ViewModel() {
 
     private val _formattedTime = mutableStateOf("00:00")
     val formattedTime: State<String> get() = _formattedTime
-
-
 
     private val _selectedNotificationDelay: MutableState<Pair<String, Int>> =
         mutableStateOf(NotificationDelay.NOTIFICATION_DELAY.first())
@@ -69,7 +77,7 @@ class CreationFormViewModel @Inject constructor() : ViewModel() {
         _time.value = (hours * 60 * 60 * 1000L) + (minutes * 60 * 1000L)
     }
 
-    fun setNewNotificationDelay(delay: Pair<String, Int>){
+    fun setNewNotificationDelay(delay: Pair<String, Int>) {
         _selectedNotificationDelay.value = delay
     }
 
@@ -83,7 +91,25 @@ class CreationFormViewModel @Inject constructor() : ViewModel() {
 
     fun submit(): Boolean {
         val validation = title.value != ""
-        //TODO(add to database)
+        if (validation) {
+            try {
+                viewModelScope.launch(Dispatchers.IO) {
+                    repository.insertNewNote(
+                        title = title.value,
+                        description = desc.value,
+                        datetime = pickedDate.value + _time.value,
+                        notificationDelay = selectedNotificationDelay.value.second
+                    )
+                    _stateUI.value = CreateDialogUIState.Success
+                    Log.e("TAG", "inside insert fun")
+                }
+                Log.e("TAG", "right after the insertion")
+            } catch (e: CancellationException) {
+                _stateUI.value = CreateDialogUIState.Error
+            }
+        } else {
+            _stateUI.value = CreateDialogUIState.Error
+        }
         return validation
     }
 

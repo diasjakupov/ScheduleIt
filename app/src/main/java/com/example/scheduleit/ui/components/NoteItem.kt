@@ -25,7 +25,7 @@ fun TaskItem(taskForView: TaskForView) {
                 .padding(12.dp)
 
         ) {
-            Text(taskForView.date)
+            Text(taskForView.time)
             Text(taskForView.name,style= TextStyle(
                 fontWeight = FontWeight(600),
                 fontSize = 18.sp
@@ -39,6 +39,6 @@ fun TaskItem(taskForView: TaskForView) {
 @Preview
 fun TaskItemPreview() {
     ScheduleItTheme {
-        TaskItem(TaskForView("Meeting conference", "1"))
+        TaskItem(TaskForView(0,"Meeting conference", "1"))
     }
 }

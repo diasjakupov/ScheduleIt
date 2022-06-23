@@ -8,4 +8,13 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
+
+    @Query("SELECT * FROM note")
+    fun getAllNotes(): Flow<List<Note>>
+
+    @Query("""
+        INSERT INTO note(title, description, datetime, notificationDelay) 
+        VALUES (:title, :description, :time, :notificationDelay)
+    """)
+    suspend fun insertNewNote(title: String, description: String, time: Long, notificationDelay: Int)
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scheduleit.data.viewModels.CreationFormViewModel
 import com.example.scheduleit.ui.components.*
@@ -28,7 +29,7 @@ import com.example.scheduleit.ui.theme.ScheduleItTheme
 
 @ExperimentalComposeUiApi
 @Composable
-fun CreateDialog(VM: CreationFormViewModel = viewModel(), onDismissRequest: () -> Unit) {
+fun CreateDialog(VM: CreationFormViewModel = hiltViewModel(), onDismissRequest: () -> Unit) {
     //reset initial data in VM
     LaunchedEffect(true) {
         VM.reset()

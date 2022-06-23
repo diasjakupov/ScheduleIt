@@ -29,7 +29,7 @@ import com.example.scheduleit.ui.theme.ScheduleItTheme
 
 @ExperimentalComposeUiApi
 @Composable
-fun CalendarPicker(VM: CreationFormViewModel = viewModel(), onDismiss: () -> Unit) {
+fun CalendarPicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
 
     val isTimePickerShown = remember {
         mutableStateOf(false)
@@ -45,7 +45,7 @@ fun CalendarPicker(VM: CreationFormViewModel = viewModel(), onDismiss: () -> Uni
         )
     ) {
         if (isTimePickerShown.value) {
-            TimePicker {
+            TimePicker(VM) {
                 isTimePickerShown.value = false
             }
         }
