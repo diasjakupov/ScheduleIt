@@ -4,10 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,20 +19,21 @@ import com.example.scheduleit.ui.theme.ExtremeLightGrey
 @Composable
 fun ItemList(VM: MainScreenViewModel, paddingValues: PaddingValues) {
 
-    val noteList: State<List<TaskForView>> = VM.noteList.collectAsState(initial = emptyList())
-
+    val noteList: State<List<TaskForView>> = VM.getNoteList().collectAsState(initial = emptyList())
 
     LazyColumn(
         modifier = Modifier
             .background(ExtremeLightGrey)
             .padding(paddingValues = paddingValues)
-            .fillMaxHeight().fillMaxWidth(),
+            .fillMaxHeight()
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(noteList.value) {
             TaskItem(it)
         }
     }
+
 }
 
 

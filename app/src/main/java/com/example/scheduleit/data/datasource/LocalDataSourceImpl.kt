@@ -1,13 +1,15 @@
 package com.example.scheduleit.data.datasource
 
 import com.example.scheduleit.data.dao.NoteDao
+import com.example.scheduleit.data.models.Note
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
 class LocalDataSourceImpl @Inject constructor(
     private val noteDao: NoteDao
 ) : LocalDataSource {
-    override fun getAllNotes() = noteDao.getAllNotes()
+    override fun getAllNotesByDay(start: Long, end: Long): Flow<List<Note>> = noteDao.getAllNotesByDay(start, end)
 
     override suspend fun insertNewNote(
         title: String,

@@ -23,8 +23,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreationFormViewModel @Inject constructor(
-    private val repository: NoteRepository
+    private val repository: NoteRepository,
+    private val calendar: Calendar
 ) : ViewModel() {
+
+    init{
+        calendar.time = Date()
+    }
 
     private val _stateUI: MutableState<CreateDialogUIState> =
         mutableStateOf(CreateDialogUIState.Loading)
@@ -58,24 +63,22 @@ class CreationFormViewModel @Inject constructor(
 
     //setter
     fun setNewDate(year: Int, month: Int, day: Int) {
-        val cal = Calendar.getInstance(TimeZone.getDefault())
         val format = SimpleDateFormat("MMM", Locale.getDefault())
-        val today = cal.get(Calendar.DAY_OF_YEAR)
-        val currentHour = cal.get(Calendar.HOUR_OF_DAY)
-        val currentMinute = cal.get(Calendar.MINUTE)
-
+        val today = calendar.get(Calendar.DAY_OF_YEAR)
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+        Log.e("TAG", "$year, $month, $day")
         //set new value
-        cal.set(year, month, day, 0, 0, 0)
+        calendar.set(year, month, day, 0, 0, 0)
 
         //provide validation in case of selected date is identical to today's date
         _minHour.value = setMinValueForHour(
-            today = today, selectedDay = cal.get(Calendar.DAY_OF_YEAR),
+            today = today, selectedDay = calendar.get(Calendar.DAY_OF_YEAR),
             hour = currentHour
         )
         //
 
-        _formattedPickedDate.value = CalendarDateFormat(year, format.format(cal.time), day)
-        _pickedDate.value = cal.timeInMillis
+        _formattedPickedDate.value = CalendarDateFormat(year, format.format(calendar.time), day)
+        _pickedDate.value = calendar.timeInMillis
     }
 
     fun setNewTitle(title: String) {
@@ -89,6 +92,7 @@ class CreationFormViewModel @Inject constructor(
     fun setNewTime(hours: Int, minutes: Int) {
         _formattedTime.value = "${String.format("%02d", hours)}:${String.format("%02d", minutes)}"
         _time.value = (hours * 60 * 60 * 1000L) + (minutes * 60 * 1000L)
+        Log.e("TAG", "${_time.value}")
     }
 
     fun setNewNotificationDelay(delay: Pair<String, Int>) {
@@ -119,7 +123,8 @@ class CreationFormViewModel @Inject constructor(
                 }
                 Log.e("TAG", "right after the insertion")
             } catch (e: CancellationException) {
-                _stateUI.value = CreateDialogUIState.Error(e.message?:"Oops, something has gone wrong")
+                _stateUI.value =
+                    CreateDialogUIState.Error(e.message ?: "Oops, something has gone wrong")
             }
         } else {
             _stateUI.value = CreateDialogUIState.Error("Some fields are not used correctly")
@@ -130,39 +135,46 @@ class CreationFormViewModel @Inject constructor(
     fun reset() {
         _stateUI.value = CreateDialogUIState.Loading
         try {
-            val cal = Calendar.getInstance()
             val format = SimpleDateFormat("MMM", Locale.getDefault())
-            val today = cal.get(Calendar.DAY_OF_YEAR)
-            val currentHour = cal.get(Calendar.HOUR_OF_DAY)
-            val currentMinute = cal.get(Calendar.MINUTE)
+            val today = calendar.get(Calendar.DAY_OF_YEAR)
+            val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
             _formattedPickedDate.value = CalendarDateFormat(
-                year = cal.get(Calendar.YEAR),
-                monthName = format.format(cal.timeInMillis),
-                day = cal.get(Calendar.DAY_OF_MONTH)
+                year = calendar.get(Calendar.YEAR),
+                monthName = format.format(calendar.timeInMillis),
+                day = calendar.get(Calendar.DAY_OF_MONTH)
             )
-            _pickedDate.value = cal.timeInMillis
+            calendar.set(
+                calendar[Calendar.YEAR],
+                calendar[Calendar.MONTH],
+                calendar[Calendar.DAY_OF_MONTH],
+                0,
+                0,
+                0
+            )
+            _pickedDate.value = calendar.timeInMillis
             _title.value = null
             _desc.value = ""
             _minHour.value = setMinValueForHour(
-                today = today, selectedDay = cal.get(Calendar.DAY_OF_YEAR),
+                today = today, selectedDay = calendar.get(Calendar.DAY_OF_YEAR),
                 hour = currentHour
             )
             _stateUI.value = CreateDialogUIState.Success
         } catch (e: Exception) {
-            _stateUI.value = CreateDialogUIState.Error(e.message?:"Oops, something has gone wrong")
+            _stateUI.value =
+                CreateDialogUIState.Error(e.message ?: "Oops, something has gone wrong")
         }
 
     }
 
-    private fun setMinValueForHour(hour:Int, today: Int, selectedDay: Int): Int {
-        return if(today==selectedDay){
+    private fun setMinValueForHour(hour: Int, today: Int, selectedDay: Int): Int {
+        return if (today == selectedDay) {
             hour
-        }else{
+        } else {
             0
         }
     }
 
-    private fun validation(): Boolean{
+    private fun validation(): Boolean {
         val titleValidation = title.value != ""
         val timeValidation = true // TODO(add proper time validation)
         return titleValidation && titleValidation

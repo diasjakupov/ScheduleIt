@@ -14,6 +14,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.util.*
 import javax.inject.Singleton
 
 
@@ -44,7 +45,7 @@ class DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideNoteRepository(localDataSource: LocalDataSource): NoteRepository{
-        return NoteRepositoryImpl(localDataSource = localDataSource)
+    fun provideNoteRepository(localDataSource: LocalDataSource, calendar: Calendar): NoteRepository{
+        return NoteRepositoryImpl(localDataSource = localDataSource, calendar = calendar)
     }
 }

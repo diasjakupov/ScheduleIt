@@ -4,7 +4,7 @@ import com.example.scheduleit.data.models.Note
 import kotlinx.coroutines.flow.Flow
 
 interface LocalDataSource {
-    fun getAllNotes(): Flow<List<Note>>
+    fun getAllNotesByDay(start:Long, end:Long): Flow<List<Note>>
 
     suspend fun insertNewNote(title: String, description: String, datetime: Long, notificationDelay: Int)
 }

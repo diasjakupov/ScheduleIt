@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NoteDao {
 
-    @Query("SELECT * FROM note")
-    fun getAllNotes(): Flow<List<Note>>
+    @Query("SELECT * FROM note WHERE datetime BETWEEN :datetimeSt and :datetimeEnd")
+    fun getAllNotesByDay(datetimeSt:Long, datetimeEnd:Long): Flow<List<Note>>
 
     @Query("""
         INSERT INTO note(title, description, datetime, notificationDelay) 

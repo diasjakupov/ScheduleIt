@@ -22,6 +22,10 @@ fun MainScreen(VM: MainScreenViewModel = hiltViewModel()) {
         mutableStateOf(false)
     }
 
+    val today = remember {
+        mutableStateOf("")
+    }
+
     Surface() {
         Column(
             modifier = Modifier.padding(
@@ -29,7 +33,7 @@ fun MainScreen(VM: MainScreenViewModel = hiltViewModel()) {
             ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CreateBtn(currentDate = "23 May 2022") {
+            CreateBtn(currentDate = today.value) {
                 isShown = true
             }
             Spacer(
@@ -46,6 +50,10 @@ fun MainScreen(VM: MainScreenViewModel = hiltViewModel()) {
 
         }
     }
+
+    LaunchedEffect(key1 = true, block = {
+        today.value = VM.getDateRepresentation()
+    })
 }
 
 @ExperimentalComposeUiApi
