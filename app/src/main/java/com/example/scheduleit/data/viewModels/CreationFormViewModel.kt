@@ -7,10 +7,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.scheduleit.data.models.Note
 import com.example.scheduleit.ui.wrappers.CalendarDateFormat
 import com.example.scheduleit.data.models.NotificationDelay
 import com.example.scheduleit.data.repository.NoteRepository
-import com.example.scheduleit.ui.state.CreateDialogUIState
+import com.example.scheduleit.ui.state.UIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -28,12 +29,13 @@ class CreationFormViewModel @Inject constructor(
 ) : ViewModel() {
 
     init{
+        Log.e("TAG", "initialize CreationFormViewModel")
         calendar.time = Date()
     }
 
-    private val _stateUI: MutableState<CreateDialogUIState> =
-        mutableStateOf(CreateDialogUIState.Loading)
-    val stateUI: State<CreateDialogUIState> get() = _stateUI
+    private val _stateUI: MutableState<UIState<Note>> =
+        mutableStateOf(UIState.Loading())
+    val stateUI: State<UIState<Note>> get() = _stateUI
 
     private val _formattedPickedDate: MutableState<CalendarDateFormat> = mutableStateOf(
         CalendarDateFormat(year = 0, monthName = "Nov", day = 0)
@@ -118,22 +120,19 @@ class CreationFormViewModel @Inject constructor(
                         datetime = pickedDate.value + _time.value,
                         notificationDelay = selectedNotificationDelay.value.second
                     )
-                    _stateUI.value = CreateDialogUIState.Success
-                    Log.e("TAG", "inside insert fun")
                 }
-                Log.e("TAG", "right after the insertion")
             } catch (e: CancellationException) {
                 _stateUI.value =
-                    CreateDialogUIState.Error(e.message ?: "Oops, something has gone wrong")
+                    UIState.Error(e.message ?: "Oops, something has gone wrong")
             }
         } else {
-            _stateUI.value = CreateDialogUIState.Error("Some fields are not used correctly")
+            _stateUI.value = UIState.Error("Some fields are not used correctly")
         }
         return valid
     }
 
     fun reset() {
-        _stateUI.value = CreateDialogUIState.Loading
+        _stateUI.value = UIState.Loading()
         try {
             val format = SimpleDateFormat("MMM", Locale.getDefault())
             val today = calendar.get(Calendar.DAY_OF_YEAR)
@@ -158,10 +157,9 @@ class CreationFormViewModel @Inject constructor(
                 today = today, selectedDay = calendar.get(Calendar.DAY_OF_YEAR),
                 hour = currentHour
             )
-            _stateUI.value = CreateDialogUIState.Success
         } catch (e: Exception) {
             _stateUI.value =
-                CreateDialogUIState.Error(e.message ?: "Oops, something has gone wrong")
+                UIState.Error(e.message ?: "Oops, something has gone wrong")
         }
 
     }

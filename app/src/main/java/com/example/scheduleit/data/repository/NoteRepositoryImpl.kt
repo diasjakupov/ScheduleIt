@@ -2,6 +2,7 @@ package com.example.scheduleit.data.repository
 
 import com.example.scheduleit.data.datasource.LocalDataSource
 import com.example.scheduleit.data.models.Note
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 import javax.inject.Inject
@@ -35,5 +36,9 @@ class NoteRepositoryImpl @Inject constructor(
         notificationDelay: Int
     ) {
         localDataSource.insertNewNote(title, description, datetime, notificationDelay)
+    }
+
+    override suspend fun getTaskByIdAsync(id: Int): Note {
+        return localDataSource.getTaskByIdAsync(id)
     }
 }

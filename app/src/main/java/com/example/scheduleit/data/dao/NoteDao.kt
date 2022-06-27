@@ -3,6 +3,7 @@ package com.example.scheduleit.data.dao
 import androidx.room.Dao
 import androidx.room.Query
 import com.example.scheduleit.data.models.Note
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 
 
@@ -11,6 +12,9 @@ interface NoteDao {
 
     @Query("SELECT * FROM note WHERE datetime BETWEEN :datetimeSt and :datetimeEnd")
     fun getAllNotesByDay(datetimeSt:Long, datetimeEnd:Long): Flow<List<Note>>
+
+    @Query("SELECT * FROM note WHERE id=:id")
+    suspend fun getTaskByIdAsync(id:Int): Note
 
     @Query("""
         INSERT INTO note(title, description, datetime, notificationDelay) 

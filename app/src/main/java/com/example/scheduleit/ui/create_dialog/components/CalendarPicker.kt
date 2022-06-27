@@ -1,4 +1,4 @@
-package com.example.scheduleit.ui.components
+package com.example.scheduleit.ui.create_dialog.components
 
 
 import android.util.Log
@@ -25,9 +25,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scheduleit.data.viewModels.CreationFormViewModel
+import com.example.scheduleit.ui.components.TimePicker
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
-@ExperimentalComposeUiApi
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CalendarPicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
 
