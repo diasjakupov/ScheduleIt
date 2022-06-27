@@ -1,6 +1,8 @@
 package com.example.scheduleit.ui.navigation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,12 +14,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.scheduleit.ui.theme.Aqua
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
 
 @Composable
 fun TabsRow() {
     var selectedTabIndex by remember {
         mutableStateOf(1)
     }
+    val interactionSource = remember { object : MutableInteractionSource{
+        override val interactions: Flow<Interaction>
+            get() = emptyFlow()
+
+        override suspend fun emit(interaction: Interaction) {}
+        override fun tryEmit(interaction: Interaction): Boolean = true
+    }}
 
     val tabs by remember {
         mutableStateOf(arrayOf("Monthly", "Daily"))
@@ -37,6 +49,7 @@ fun TabsRow() {
             Tab(
                 selected = selectedTabIndex == index,
                 onClick = { selectedTabIndex = index },
+                interactionSource = interactionSource,
                 modifier = if (selectedTabIndex == index) {
                     Modifier
                         .clip(RoundedCornerShape(50.dp))

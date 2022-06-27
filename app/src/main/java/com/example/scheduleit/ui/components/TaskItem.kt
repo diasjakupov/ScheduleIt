@@ -1,5 +1,6 @@
 package com.example.scheduleit.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,8 +18,10 @@ import com.example.scheduleit.ui.wrappers.TaskForView
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
 @Composable
-fun TaskItem(taskForView: TaskForView) {
-    Surface(elevation = 2.dp, shape = RoundedCornerShape(6.dp)) {
+fun TaskItem(taskForView: TaskForView, onClick: ()->Unit) {
+    Surface(elevation = 2.dp, shape = RoundedCornerShape(6.dp), modifier = Modifier.clickable {
+        onClick()
+    }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -39,6 +42,6 @@ fun TaskItem(taskForView: TaskForView) {
 @Preview
 fun TaskItemPreview() {
     ScheduleItTheme {
-        TaskItem(TaskForView(0,"Meeting conference", "1"))
+        TaskItem(TaskForView(0,"Meeting conference", "1")){}
     }
 }
