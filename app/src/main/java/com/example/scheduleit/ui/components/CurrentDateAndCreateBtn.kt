@@ -1,15 +1,17 @@
 package com.example.scheduleit.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,7 +22,7 @@ import com.example.scheduleit.ui.theme.ScheduleItTheme
 
 
 @Composable
-fun CreateBtn(currentDate: String, onClick: ()->Unit) {
+fun CreateBtn(currentDate: String, onClick: () -> Unit) {
 
     Row(
         modifier = Modifier
@@ -29,21 +31,27 @@ fun CreateBtn(currentDate: String, onClick: ()->Unit) {
                 start = 48.dp,
                 end = 48.dp
             ),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             currentDate, style = TextStyle(
                 fontWeight = FontWeight(500),
-                fontSize = 24.sp
+                fontSize = 30.sp
             )
         )
-        Button(
-            onClick = {
-                    onClick()
-            },
-            colors = ButtonDefaults.buttonColors(backgroundColor = Aqua)
+        Surface(
         ) {
-            Text("Create task", style = TextStyle(color = MaterialTheme.colors.primary))
+            IconButton(onClick = { onClick() }, modifier = Modifier.padding(2.dp)) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "calendar icon",
+                    modifier = Modifier
+
+                )
+            }
+
+
         }
     }
 }
@@ -53,7 +61,7 @@ fun CreateBtn(currentDate: String, onClick: ()->Unit) {
 @Preview
 fun CreateBtnPreview() {
     ScheduleItTheme() {
-        CreateBtn(currentDate = "23 May 2018"){}
+        CreateBtn(currentDate = "23 May 2018") {}
 
     }
 }
