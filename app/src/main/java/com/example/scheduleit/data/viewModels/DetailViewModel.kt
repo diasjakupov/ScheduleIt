@@ -11,13 +11,15 @@ import com.example.scheduleit.ui.state.UIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val repository: NoteRepository
-) : ViewModel() {
+    private val repository: NoteRepository,
+) : ViewModel(), IGetDateRepresentation {
     val stateUI: MutableState<UIState<Note>> = mutableStateOf(UIState.Loading())
 
     fun getTaskById(id: Int) {
@@ -26,11 +28,21 @@ class DetailViewModel @Inject constructor(
             try {
                 val task = repository.getTaskByIdAsync(id)
                 stateUI.value = UIState.Success(task)
+
             } catch (e: Exception) {
                 e.printStackTrace()
                 stateUI.value = UIState.Error(e.message ?: "Unexpected error")
             }
 
+        }
+    }
+
+    override fun getDateRepresentation(format: String): String {
+        return when(val state=stateUI.value){
+            is UIState.Success<Note>->{
+                SimpleDateFormat(format, Locale.getDefault()).format(Date(state.value.datetime))
+            }
+            else->{""}
         }
     }
 }

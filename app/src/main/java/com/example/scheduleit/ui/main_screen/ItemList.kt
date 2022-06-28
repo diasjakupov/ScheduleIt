@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -21,7 +22,7 @@ import com.example.scheduleit.ui.theme.ExtremeLightGrey
 @Composable
 fun ItemList(
     VM: MainScreenViewModel,
-    paddingValues: PaddingValues,
+    top: Dp,
     onClick: (id:Int) -> Unit
 ) {
     val noteList: State<List<TaskForView>> = VM.getNoteList().collectAsState(initial = emptyList())
@@ -29,8 +30,7 @@ fun ItemList(
 
     LazyColumn(
         modifier = Modifier
-            .background(ExtremeLightGrey)
-            .padding(paddingValues = paddingValues)
+            .padding(top = top)
             .fillMaxHeight()
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -49,7 +49,7 @@ fun ItemList(
 @Preview
 fun ItemListPreview() {
     ItemList(
-        viewModel(), PaddingValues(start = 48.dp, end = 48.dp, top = 18.dp),
+        viewModel(),top = 18.dp,
         onClick = {}
     )
 }

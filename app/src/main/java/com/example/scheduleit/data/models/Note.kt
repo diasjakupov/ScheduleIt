@@ -10,5 +10,6 @@ data class Note(
     val description: String,
     val datetime: Long,
     val notificationDelay: Int,
+    val status: Boolean,
     @PrimaryKey(autoGenerate = true) val id: Int = 0
 )

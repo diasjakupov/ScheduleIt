@@ -33,9 +33,9 @@ class NoteRepositoryImpl @Inject constructor(
         title: String,
         description: String,
         datetime: Long,
-        notificationDelay: Int
+        notificationDelay: Int, status: Boolean
     ) {
-        localDataSource.insertNewNote(title, description, datetime, notificationDelay)
+        localDataSource.insertNewNote(title, description, datetime, notificationDelay, status)
     }
 
     override suspend fun getTaskByIdAsync(id: Int): Note {

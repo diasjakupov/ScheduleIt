@@ -28,7 +28,7 @@ class CreationFormViewModel @Inject constructor(
     private val calendar: Calendar
 ) : ViewModel() {
 
-    init{
+    init {
         Log.e("TAG", "initialize CreationFormViewModel")
         calendar.time = Date()
     }
@@ -118,7 +118,8 @@ class CreationFormViewModel @Inject constructor(
                         title = title.value!!,
                         description = desc.value,
                         datetime = pickedDate.value + _time.value,
-                        notificationDelay = selectedNotificationDelay.value.second
+                        notificationDelay = selectedNotificationDelay.value.second,
+                        status = false
                     )
                 }
             } catch (e: CancellationException) {

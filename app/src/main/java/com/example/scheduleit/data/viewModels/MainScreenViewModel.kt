@@ -20,21 +20,20 @@ import kotlin.time.ExperimentalTime
 class MainScreenViewModel @Inject constructor(
     private val repository: NoteRepository,
     private val calendar: Calendar
-) : ViewModel() {
+) : ViewModel(), IGetDateRepresentation {
 
     init{
         calendar.time = Date()
     }
 
     private val timeFormatter = SimpleDateFormat("kk:mm", Locale.getDefault())
-    private val _formattedDate = SimpleDateFormat("MMMM d, y", Locale.getDefault())
 
 
     private fun getCurrentDate(): Long {
         return calendar.timeInMillis
     }
 
-    fun getDateRepresentation(): String = _formattedDate.format(
+    override fun getDateRepresentation(format:String): String = SimpleDateFormat(format, Locale.getDefault()).format(
         getCurrentDate()
     )
 

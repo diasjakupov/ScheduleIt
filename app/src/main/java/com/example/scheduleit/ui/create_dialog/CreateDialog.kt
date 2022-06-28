@@ -66,21 +66,10 @@ fun CreateDialog(VM: CreationFormViewModel = hiltViewModel(), onDismissRequest: 
                     )
                 ) {
                     //Header
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "Create New Tasks", style = TextStyle(
-                                fontWeight = FontWeight(700),
-                                fontSize = 26.sp
-                            )
-                        )
-                        Divider(
-                            modifier = Modifier
-                                .padding(top = 8.dp, start = 12.dp),
-                            thickness = 2.dp
-                        )
-                    }
+                    TaskHeader(title = "Create New Tasks", textStyle = TextStyle(
+                        fontWeight = FontWeight(700),
+                        fontSize = 26.sp
+                    ))
                     Spacer(modifier = Modifier.height(24.dp))
                     //Body
                     Column {
@@ -174,6 +163,7 @@ fun CreateDialog(VM: CreationFormViewModel = hiltViewModel(), onDismissRequest: 
                         )
                     )
                 }
+
                 //showing calendar dialog if it is necessary
                 if (isCalendarShown.value) {
                     CalendarPicker(VM) {

@@ -32,7 +32,11 @@ fun NavigationComposable(navController: NavHostController) {
                 type = NavType.IntType
             })
         ) {
-            DetailDialog(it.arguments!!.getInt("taskId")) {
+            DetailDialog(
+                id = it.arguments?.getInt("taskId") ?: 0,
+                navController = navController,
+                VM = hiltViewModel()
+            ) {
                 navController.navigate("main_screen")
             }
         }

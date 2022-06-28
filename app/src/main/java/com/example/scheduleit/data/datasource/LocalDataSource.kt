@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface LocalDataSource {
     fun getAllNotesByDay(start:Long, end:Long): Flow<List<Note>>
     suspend fun getTaskByIdAsync(id:Int): Note
-    suspend fun insertNewNote(title: String, description: String, datetime: Long, notificationDelay: Int)
+    suspend fun insertNewNote(title: String, description: String, datetime: Long, notificationDelay: Int, status: Boolean)
 }

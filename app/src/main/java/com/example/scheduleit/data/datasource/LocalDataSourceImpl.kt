@@ -21,9 +21,9 @@ class LocalDataSourceImpl @Inject constructor(
         title: String,
         description: String,
         datetime: Long,
-        notificationDelay: Int
+        notificationDelay: Int, status: Boolean
     ) {
-        noteDao.insertNewNote(title, description, datetime, notificationDelay)
+        noteDao.insertNewNote(title, description, datetime, notificationDelay, status)
     }
 
 }

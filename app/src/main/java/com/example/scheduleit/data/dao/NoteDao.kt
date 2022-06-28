@@ -17,8 +17,8 @@ interface NoteDao {
     suspend fun getTaskByIdAsync(id:Int): Note
 
     @Query("""
-        INSERT INTO note(title, description, datetime, notificationDelay) 
-        VALUES (:title, :description, :time, :notificationDelay)
+        INSERT INTO note(title, description, datetime, notificationDelay, status) 
+        VALUES (:title, :description, :time, :notificationDelay, :status)
     """)
-    suspend fun insertNewNote(title: String, description: String, time: Long, notificationDelay: Int)
+    suspend fun insertNewNote(title: String, description: String, time: Long, notificationDelay: Int, status:Boolean)
 }
