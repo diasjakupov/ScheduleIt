@@ -1,5 +1,11 @@
 package com.example.scheduleit.ui.detail
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
+
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -7,16 +13,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Done
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.drawscope.DrawStyle
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -31,11 +37,13 @@ import androidx.navigation.NavController
 import com.example.scheduleit.data.models.Note
 import com.example.scheduleit.data.viewModels.DetailViewModel
 import com.example.scheduleit.ui.components.CreateBtn
+import com.example.scheduleit.ui.components.Loader
 import com.example.scheduleit.ui.components.TaskHeader
 import com.example.scheduleit.ui.state.UIState
 import com.example.scheduleit.ui.theme.Aqua
 import org.intellij.lang.annotations.JdkConstants
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DetailDialog(
     id: Int,
@@ -43,15 +51,24 @@ fun DetailDialog(
     VM: DetailViewModel,
     onDismiss: () -> Unit
 ) {
+
     LaunchedEffect(key1 = true, block = {
         VM.getTaskById(id)
     })
 
-    Dialog(onDismissRequest = { onDismiss() }) {
+    Dialog(
+        onDismissRequest = { onDismiss() }, properties = DialogProperties(
+            dismissOnClickOutside = true,
+            dismissOnBackPress = true,
+            usePlatformDefaultWidth = false
+        )
+    ) {
         Surface(
             modifier = Modifier
-                .fillMaxWidth()
-                ,
+                .fillMaxWidth(0.8f)
+                .animateContentSize(
+                    animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
+                ),
             shape = RoundedCornerShape(6.dp)
         ) {
             //Header
@@ -123,16 +140,23 @@ fun DetailDialog(
                             Text("delete".uppercase())
                         }
                     }
-
                 }
-
-
                 is UIState.Error -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(state.errorMessage)
                     }
                 }
-                else -> {}
+                is UIState.Loading -> {
+                    Box(modifier = Modifier.height(200.dp), contentAlignment = Alignment.Center) {
+                        Loader(
+                            compSize = 60.dp,
+                            startAngle = 0f,
+                            sweepAngle = 270f,
+                            strokeWidth = 4.dp
+                        )
+                    }
+
+                }
             }
 
 

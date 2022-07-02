@@ -10,6 +10,7 @@ import com.example.scheduleit.data.repository.NoteRepository
 import com.example.scheduleit.ui.state.UIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -27,6 +28,7 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val task = repository.getTaskByIdAsync(id)
+                delay(3000L)
                 stateUI.value = UIState.Success(task)
 
             } catch (e: Exception) {
