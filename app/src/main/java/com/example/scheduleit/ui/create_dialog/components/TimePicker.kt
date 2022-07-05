@@ -22,7 +22,7 @@ import com.example.scheduleit.data.viewModels.CreationFormViewModel
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
 @Composable
-fun TimePicker(VM: CreationFormViewModel,onDismiss: () -> Unit) {
+fun TimePicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
     val hours = remember {
         mutableStateOf(VM.minHour.value)
     }

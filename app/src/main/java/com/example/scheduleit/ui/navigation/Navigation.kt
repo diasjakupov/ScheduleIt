@@ -2,7 +2,6 @@ package com.example.scheduleit.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -11,9 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import com.example.scheduleit.data.viewModels.CreationFormViewModel
-import com.example.scheduleit.data.viewModels.MainScreenViewModel
+import com.example.scheduleit.data.viewModels.DetailViewModel
 import com.example.scheduleit.ui.create_dialog.CreateDialog
-import com.example.scheduleit.ui.create_dialog.components.CalendarPicker
 import com.example.scheduleit.ui.detail.DetailDialog
 import com.example.scheduleit.ui.main_screen.MainScreen
 
@@ -34,15 +32,15 @@ fun NavigationComposable(navController: NavHostController) {
         ) {
             DetailDialog(
                 id = it.arguments?.getInt("taskId") ?: 0,
-                navController = navController,
-                VM = hiltViewModel()
+                detailVM = hiltViewModel<DetailViewModel>(),
+                creationVM = hiltViewModel<CreationFormViewModel>()
             ) {
                 navController.navigate("main_screen")
             }
         }
         dialog("create_dialog") {
             val creationViewModel = hiltViewModel<CreationFormViewModel>()
-            CreateDialog(VM = creationViewModel) {
+            CreateDialog(VM = creationViewModel, ) {
                 navController.navigate("main_screen")
             }
         }

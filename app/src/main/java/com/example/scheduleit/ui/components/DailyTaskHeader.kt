@@ -1,5 +1,6 @@
 package com.example.scheduleit.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
@@ -13,12 +14,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun TaskHeader(title: String, textStyle: TextStyle){
+fun TaskHeader(title: String, textStyle: TextStyle, modifier: Modifier = Modifier){
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            title, style = textStyle
+            title, style = textStyle, modifier = modifier
         )
         Divider(
             modifier = Modifier

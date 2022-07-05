@@ -31,7 +31,7 @@ import com.example.scheduleit.ui.theme.ScheduleItTheme
 fun CreateBtn(
     format: String,
     textStyle: TextStyle,
-    horizontal:Arrangement.Horizontal,
+    horizontal: Arrangement.Horizontal,
     VM: IGetDateRepresentation,
     reversed: Boolean = false,
     onClick: () -> Unit
@@ -51,8 +51,10 @@ fun CreateBtn(
         horizontalArrangement = horizontal,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if(reversed){
-            IconButton(onClick = { onClick() }) {
+        if (reversed) {
+            IconButton(onClick = {
+                onClick()
+            }) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
                     contentDescription = "calendar icon",
@@ -62,11 +64,13 @@ fun CreateBtn(
             Text(
                 currentDate.value, style = textStyle
             )
-        }else{
+        } else {
             Text(
                 currentDate.value, style = textStyle
             )
-            IconButton(onClick = { onClick() }) {
+            IconButton(onClick = {
+                onClick()
+            }) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
                     contentDescription = "calendar icon",
@@ -82,6 +86,11 @@ fun CreateBtn(
 @Preview
 fun CreateBtnPreview() {
     ScheduleItTheme() {
-        CreateBtn(format = "", textStyle = TextStyle(), horizontal = Arrangement.Start, VM = hiltViewModel()) {}
+        CreateBtn(
+            format = "",
+            textStyle = TextStyle(),
+            horizontal = Arrangement.Start,
+            VM = hiltViewModel()
+        ) {}
     }
 }

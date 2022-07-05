@@ -1,10 +1,8 @@
 package com.example.scheduleit.ui.create_dialog
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,7 +18,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.scheduleit.data.viewModels.CreationFormViewModel
 import com.example.scheduleit.ui.components.*
 import com.example.scheduleit.ui.create_dialog.components.CalendarPicker
-import com.example.scheduleit.ui.create_dialog.components.NotificationDropDownMenu
 import com.example.scheduleit.ui.state.UIState
 import com.example.scheduleit.ui.theme.Aqua
 import com.example.scheduleit.ui.theme.ScheduleItTheme
@@ -104,39 +101,9 @@ fun CreateDialog(VM: CreationFormViewModel = hiltViewModel(), onDismissRequest: 
 
                         Spacer(modifier = Modifier.height(48.dp))
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            DateField(
-                                value = VM.formattedPickedDate.value.day.toString(),
-                                placeholder = "Day",
-                                modifier = Modifier
-                                    .width(60.dp)
-                                    .clickable {
-                                        isCalendarShown.value = true
-                                    })
-                            DateField(
-                                value = VM.formattedPickedDate.value.monthName,
-                                placeholder = "Day",
-                                modifier = Modifier
-                                    .width(80.dp)
-                                    .clickable {
-                                        isCalendarShown.value = true
-                                    })
-                            DateField(
-                                value = VM.formattedPickedDate.value.year.toString(),
-                                placeholder = "Day",
-                                modifier = Modifier
-                                    .width(100.dp)
-                                    .clickable {
-                                        isCalendarShown.value = true
-                                    })
+                        DateTimeBlock(dataHolder = VM.formattedPickedDate.value){
+                            isCalendarShown.value = true
                         }
-
-                        Spacer(modifier = Modifier.height(48.dp))
-                        NotificationDropDownMenu()
 
                         Spacer(modifier = Modifier.height(48.dp))
                     }
@@ -173,14 +140,7 @@ fun CreateDialog(VM: CreationFormViewModel = hiltViewModel(), onDismissRequest: 
             }
         }
     }
-
-    when (VM.stateUI.value) {
-        is UIState.Success -> {}
-        is UIState.Error -> {
-            //TODO add alert dialog
-        }
-        else -> {}
-    }
+    //TODO add error on validation check
 
 }
 

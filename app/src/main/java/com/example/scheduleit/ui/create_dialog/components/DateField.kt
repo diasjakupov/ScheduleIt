@@ -1,4 +1,4 @@
-package com.example.scheduleit.ui.components
+package com.example.scheduleit.ui.create_dialog.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.wrapContentSize
@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun DateField(value: String, placeholder: String, modifier: Modifier){
     Column(modifier = modifier) {
-        Text(if(value == "0"){
+        Text(if(value == "0" || value == ""){
             placeholder
         }else{
             value

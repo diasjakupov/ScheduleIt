@@ -143,7 +143,7 @@ fun CalendarPicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
     }
 
     LaunchedEffect(key1 = VM.pickedDate.value, block = {
-        date.value = VM.getDateRepresentation()
+        date.value = VM.getDateRepresentation("MMMM d, y")
     })
 }
 

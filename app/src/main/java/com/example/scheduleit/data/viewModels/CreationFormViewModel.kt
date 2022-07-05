@@ -26,19 +26,14 @@ import javax.inject.Inject
 class CreationFormViewModel @Inject constructor(
     private val repository: NoteRepository,
     private val calendar: Calendar
-) : ViewModel() {
+) : ViewModel(), IGetDateRepresentation {
 
     init {
-        Log.e("TAG", "initialize CreationFormViewModel")
         calendar.time = Date()
     }
 
-    private val _stateUI: MutableState<UIState<Note>> =
-        mutableStateOf(UIState.Loading())
-    val stateUI: State<UIState<Note>> get() = _stateUI
-
     private val _formattedPickedDate: MutableState<CalendarDateFormat> = mutableStateOf(
-        CalendarDateFormat(year = 0, monthName = "Nov", day = 0)
+        CalendarDateFormat(year = 0, monthName = "", day = 0)
     )
     val formattedPickedDate: State<CalendarDateFormat> get() = _formattedPickedDate
 
@@ -66,18 +61,34 @@ class CreationFormViewModel @Inject constructor(
     //setter
     fun setNewDate(year: Int, month: Int, day: Int) {
         val format = SimpleDateFormat("MMM", Locale.getDefault())
-        val today = calendar.get(Calendar.DAY_OF_YEAR)
         val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-        Log.e("TAG", "$year, $month, $day")
         //set new value
         calendar.set(year, month, day, 0, 0, 0)
 
         //provide validation in case of selected date is identical to today's date
         _minHour.value = setMinValueForHour(
-            today = today, selectedDay = calendar.get(Calendar.DAY_OF_YEAR),
+            today = day, selectedDay = calendar.get(Calendar.DAY_OF_YEAR),
             hour = currentHour
         )
         //
+
+        _formattedPickedDate.value = CalendarDateFormat(year, format.format(calendar.time), day)
+        _pickedDate.value = calendar.timeInMillis
+    }
+
+    fun setNewDate(date: Long){
+        calendar.time = Date(date)
+
+        val year = calendar[Calendar.YEAR]
+        val day = calendar[Calendar.DAY_OF_YEAR]
+        val format = SimpleDateFormat("MMM", Locale.getDefault())
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+
+
+        _minHour.value = setMinValueForHour(
+            today = day, selectedDay = calendar.get(Calendar.DAY_OF_YEAR),
+            hour = currentHour
+        )
 
         _formattedPickedDate.value = CalendarDateFormat(year, format.format(calendar.time), day)
         _pickedDate.value = calendar.timeInMillis
@@ -94,7 +105,6 @@ class CreationFormViewModel @Inject constructor(
     fun setNewTime(hours: Int, minutes: Int) {
         _formattedTime.value = "${String.format("%02d", hours)}:${String.format("%02d", minutes)}"
         _time.value = (hours * 60 * 60 * 1000L) + (minutes * 60 * 1000L)
-        Log.e("TAG", "${_time.value}")
     }
 
     fun setNewNotificationDelay(delay: Pair<String, Int>) {
@@ -103,14 +113,12 @@ class CreationFormViewModel @Inject constructor(
 
 
     //formatter
-    fun getDateRepresentation(): String {
-        val format = SimpleDateFormat("MMMM d, y", Locale.getDefault())
-        return format.format(Date(pickedDate.value))
-    }
+    override fun getDateRepresentation(format: String): String =
+        SimpleDateFormat(format, Locale.getDefault()).format(Date(pickedDate.value))
 
 
     fun submit(): Boolean {
-        val valid = validation()
+        var valid = validation()
         if (valid) {
             try {
                 viewModelScope.launch(Dispatchers.IO) {
@@ -123,46 +131,36 @@ class CreationFormViewModel @Inject constructor(
                     )
                 }
             } catch (e: CancellationException) {
-                _stateUI.value =
-                    UIState.Error(e.message ?: "Oops, something has gone wrong")
+                valid = false
             }
-        } else {
-            _stateUI.value = UIState.Error("Some fields are not used correctly")
         }
         return valid
     }
 
     fun reset() {
-        _stateUI.value = UIState.Loading()
-        try {
-            val format = SimpleDateFormat("MMM", Locale.getDefault())
-            val today = calendar.get(Calendar.DAY_OF_YEAR)
-            val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-            _formattedPickedDate.value = CalendarDateFormat(
-                year = calendar.get(Calendar.YEAR),
-                monthName = format.format(calendar.timeInMillis),
-                day = calendar.get(Calendar.DAY_OF_MONTH)
-            )
-            calendar.set(
-                calendar[Calendar.YEAR],
-                calendar[Calendar.MONTH],
-                calendar[Calendar.DAY_OF_MONTH],
-                0,
-                0,
-                0
-            )
-            _pickedDate.value = calendar.timeInMillis
-            _title.value = null
-            _desc.value = ""
-            _minHour.value = setMinValueForHour(
-                today = today, selectedDay = calendar.get(Calendar.DAY_OF_YEAR),
-                hour = currentHour
-            )
-        } catch (e: Exception) {
-            _stateUI.value =
-                UIState.Error(e.message ?: "Oops, something has gone wrong")
-        }
-
+        val format = SimpleDateFormat("MMM", Locale.getDefault())
+        val today = calendar.get(Calendar.DAY_OF_YEAR)
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+        _formattedPickedDate.value = CalendarDateFormat(
+            year = calendar.get(Calendar.YEAR),
+            monthName = format.format(calendar.timeInMillis),
+            day = calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        calendar.set(
+            calendar[Calendar.YEAR],
+            calendar[Calendar.MONTH],
+            calendar[Calendar.DAY_OF_MONTH],
+            0,
+            0,
+            0
+        )
+        _pickedDate.value = calendar.timeInMillis
+        _title.value = null
+        _desc.value = ""
+        _minHour.value = setMinValueForHour(
+            today = today, selectedDay = calendar.get(Calendar.DAY_OF_YEAR),
+            hour = currentHour
+        )
     }
 
     private fun setMinValueForHour(hour: Int, today: Int, selectedDay: Int): Int {
@@ -174,8 +172,10 @@ class CreationFormViewModel @Inject constructor(
     }
 
     private fun validation(): Boolean {
-        val titleValidation = title.value != ""
+        val titleValidation =  title.value != ""
         val timeValidation = true // TODO(add proper time validation)
         return titleValidation && titleValidation
     }
 }
+
+

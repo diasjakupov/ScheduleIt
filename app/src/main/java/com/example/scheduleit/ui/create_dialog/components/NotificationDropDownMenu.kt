@@ -1,9 +1,13 @@
 package com.example.scheduleit.ui.create_dialog.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -15,15 +19,17 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scheduleit.data.models.NotificationDelay
 import com.example.scheduleit.data.viewModels.CreationFormViewModel
 
 @Composable
-fun NotificationDropDownMenu(VM: CreationFormViewModel = viewModel()) {
+fun NotificationDropDownMenu(VM: CreationFormViewModel = hiltViewModel()) {
     val expanded = remember {
         mutableStateOf(false)
     }
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             "Notification", style = TextStyle(
@@ -39,25 +45,30 @@ fun NotificationDropDownMenu(VM: CreationFormViewModel = viewModel()) {
         Divider()
         if (expanded.value) {
             Surface(elevation = 1.dp, modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(2.dp)) {
-                    NotificationDelay.NOTIFICATION_DELAY.forEach {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(2.dp)
+                ) {
+                    items(NotificationDelay.NOTIFICATION_DELAY) { item ->
                         Text(
-                            it.first, style = TextStyle(
+                            item.first, style = TextStyle(
                                 fontWeight = FontWeight(600),
                                 fontSize = 18.sp
                             ), modifier = Modifier
                                 .padding(top = 8.dp)
                                 .fillMaxWidth()
                                 .clickable {
-                                    VM.setNewNotificationDelay(it)
+                                    VM.setNewNotificationDelay(item)
                                     expanded.value = !expanded.value
                                 }
                         )
                         Divider()
                     }
+
                 }
             }
         }
     }
-
 }
+
+

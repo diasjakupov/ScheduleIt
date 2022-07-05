@@ -1,12 +1,11 @@
 package com.example.scheduleit.ui.detail
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Animatable
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,42 +17,44 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.DrawStyle
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.Popup
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.example.scheduleit.data.models.Note
+import com.example.scheduleit.data.viewModels.CreationFormViewModel
 import com.example.scheduleit.data.viewModels.DetailViewModel
 import com.example.scheduleit.ui.components.CreateBtn
+import com.example.scheduleit.ui.components.CustomTextField
 import com.example.scheduleit.ui.components.Loader
 import com.example.scheduleit.ui.components.TaskHeader
 import com.example.scheduleit.ui.state.UIState
 import com.example.scheduleit.ui.theme.Aqua
-import org.intellij.lang.annotations.JdkConstants
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DetailDialog(
     id: Int,
-    navController: NavController,
-    VM: DetailViewModel,
+    detailVM: DetailViewModel,
+    creationVM: CreationFormViewModel,
     onDismiss: () -> Unit
 ) {
+    val changeMod = remember {
+        mutableStateOf(false)
+    }
+    val isDateEditBlockShown = remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = true, block = {
-        VM.getTaskById(id)
+        detailVM.getTaskById(id)
+    })
+
+    LaunchedEffect(key1 = detailVM.date.value, block = {
+        creationVM.setNewDate(detailVM.date.value)
     })
 
     Dialog(
@@ -67,13 +68,14 @@ fun DetailDialog(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .animateContentSize(
-                    animationSpec = tween(durationMillis = 100, easing = LinearOutSlowInEasing)
+                    animationSpec = tween(durationMillis = 500, easing = LinearOutSlowInEasing)
                 ),
             shape = RoundedCornerShape(6.dp)
         ) {
             //Header
-            when (val state: UIState<Note> = VM.stateUI.value) {
+            when (val state: UIState<Note> = detailVM.stateUI.value) {
                 is UIState.Success -> {
+                    //main body
                     Column(verticalArrangement = Arrangement.SpaceBetween) {
                         Column(
                             modifier = Modifier.padding(
@@ -89,22 +91,43 @@ fun DetailDialog(
                                         .background(color = Aqua)
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
-                                TaskHeader(
-                                    title = state.value.title, textStyle = TextStyle(
-                                        fontWeight = FontWeight(500),
-                                        fontSize = 20.sp
+                                if(changeMod.value){
+                                    CustomTextField(
+                                        value = creationVM.title.value ?: "",
+                                        placeholder = "Title",
+                                        onValueChange = { creationVM.setNewTitle(it) })
+                                }else{
+                                    TaskHeader(
+                                        title = state.value.title, textStyle = TextStyle(
+                                            fontWeight = FontWeight(500),
+                                            fontSize = 20.sp
+                                        ), modifier = Modifier.clickable {
+                                            changeMod.value = true
+                                        }
                                     )
-                                )
+                                }
+
                             }
                             CreateBtn(
                                 format = "d MMM kk:mm", textStyle = TextStyle(
                                     fontWeight = FontWeight.Normal, fontSize = 16.sp
-                                ), horizontal = Arrangement.Start, reversed = true, VM = VM
+                                ), horizontal = Arrangement.Start, reversed = true, VM = detailVM
                             ) {
-                                navController.navigate("create_dialog")
+                                changeMod.value = true
+                                isDateEditBlockShown.value = true
                             }
                             Spacer(modifier = Modifier.height(10.dp))
-                            Text(state.value.description)
+                            if(changeMod.value){
+                                CustomTextField(
+                                    value = creationVM.desc.value,
+                                    placeholder = "Description",
+                                    onValueChange = {creationVM.setNewDesc(it)})
+                            }else{
+                                Text(state.value.description, modifier = Modifier.clickable {
+                                    changeMod.value = true
+                                })
+                            }
+
                             Spacer(modifier = Modifier.height(16.dp))
                             Row() {
                                 Icon(
@@ -119,7 +142,7 @@ fun DetailDialog(
                                 )
                                 Text(
                                     "Completed", color = if (state.value.status) {
-                                        MaterialTheme.colors.onPrimary
+                                        Color.Green
                                     } else {
                                         Color.LightGray
                                     }
@@ -127,29 +150,81 @@ fun DetailDialog(
                             }
                             Spacer(modifier = Modifier.height(16.dp))
                         }
-                        Button(
-                            onClick = { onDismiss() /*TODO*/ },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RectangleShape,
-                            contentPadding = PaddingValues(14.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colors.error,
-                                contentColor = Color.White
-                            )
-                        ) {
-                            Text("delete".uppercase())
+                        Row(modifier = Modifier.fillMaxWidth()){
+                            if(changeMod.value){
+                                Button(
+                                    onClick = { changeMod.value = false/*TODO*/ },
+                                    modifier = Modifier.fillMaxWidth(0.5f),
+                                    shape = RectangleShape,
+                                    contentPadding = PaddingValues(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Aqua,
+                                        contentColor = Color.White
+                                    )
+                                ) {
+                                    Text("edit".uppercase())
+                                }
+                                Button(
+                                    onClick = { changeMod.value = false
+                                                onDismiss()/*TODO*/ },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RectangleShape,
+                                    contentPadding = PaddingValues(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color.Red,
+                                        contentColor = Color.White
+                                    )
+                                ) {
+                                    Text("cancel".uppercase())
+                                }
+                            }else{
+                                Button(
+                                    onClick = { onDismiss() /*TODO*/ },
+                                    modifier = Modifier.fillMaxWidth(0.5f),
+                                    shape = RectangleShape,
+                                    contentPadding = PaddingValues(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color.Green,
+                                        contentColor = Color.White
+                                    )
+                                ) {
+                                    Text("done".uppercase())
+                                }
+                                Button(
+                                    onClick = { onDismiss() /*TODO*/ },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RectangleShape,
+                                    contentPadding = PaddingValues(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = MaterialTheme.colors.error,
+                                        contentColor = Color.White
+                                    )
+                                ) {
+                                    Text("delete".uppercase())
+                                }
+                            }
+                        }
+
+                    }
+
+                    //for edit mode
+                    if(changeMod.value && isDateEditBlockShown.value){
+                        DateTimeEditBlock() {
+                            changeMod.value = false
                         }
                     }
                 }
+
                 is UIState.Error -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier.height(150.dp), contentAlignment = Alignment.Center) {
                         Text(state.errorMessage)
                     }
                 }
+
                 is UIState.Loading -> {
-                    Box(modifier = Modifier.height(200.dp), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier.height(150.dp), contentAlignment = Alignment.Center) {
                         Loader(
-                            compSize = 60.dp,
+                            compSize = 55.dp,
                             startAngle = 0f,
                             sweepAngle = 270f,
                             strokeWidth = 4.dp
