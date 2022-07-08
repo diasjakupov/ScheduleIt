@@ -51,11 +51,9 @@ fun DetailDialog(
 
     LaunchedEffect(key1 = true, block = {
         detailVM.getTaskById(id)
-    })
-
-    LaunchedEffect(key1 = detailVM.date.value, block = {
         creationVM.setNewDate(detailVM.date.value)
     })
+
 
     Dialog(
         onDismissRequest = { onDismiss() }, properties = DialogProperties(

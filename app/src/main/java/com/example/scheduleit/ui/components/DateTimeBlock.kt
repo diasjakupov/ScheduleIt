@@ -26,7 +26,7 @@ fun DateTimeBlock(dataHolder: CalendarDateFormat, onDateClick: ()->Unit){
                         onDateClick()
                     })
             DateField(
-                value = dataHolder.monthName,
+                value = dataHolder.month.toString(),
                 placeholder = "Month",
                 modifier = Modifier
                     .width(80.dp)

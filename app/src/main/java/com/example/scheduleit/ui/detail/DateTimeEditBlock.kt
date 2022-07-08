@@ -23,7 +23,7 @@ import com.example.scheduleit.ui.create_dialog.components.NotificationDropDownMe
 import com.example.scheduleit.ui.theme.Aqua
 
 @Composable
-fun DateTimeEditBlock(VM: DetailViewModel = hiltViewModel(),onDismiss: () -> Unit) {
+fun DateTimeEditBlock(VM: CreationFormViewModel = hiltViewModel(), onDismiss: () -> Unit) {
 
     val isCalendarShown = remember {
         mutableStateOf(false)

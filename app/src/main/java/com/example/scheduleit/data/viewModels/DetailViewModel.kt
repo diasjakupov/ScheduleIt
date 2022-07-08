@@ -26,12 +26,10 @@ class DetailViewModel @Inject constructor(
 ) : ViewModel(), IGetDateRepresentation {
     val stateUI: MutableState<UIState<Note>> = mutableStateOf(UIState.Loading())
 
-    private val _formattedPickedDate = mutableStateOf(CalendarDateFormat(0, "", 0))
-    val formattedPickedDate: State<CalendarDateFormat> get() = _formattedPickedDate
+
     val date = mutableStateOf(0L)
 
     suspend fun getTaskById(id: Int) {
-        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
         stateUI.value = UIState.Loading()
 
         try {
@@ -39,12 +37,7 @@ class DetailViewModel @Inject constructor(
 
             calendar.time = Date(task.datetime)
             date.value = task.datetime
-            Log.e("TAG", "detail ${date.value}")
-            _formattedPickedDate.value = CalendarDateFormat(
-                calendar[Calendar.YEAR],
-                monthFormat.format(calendar.time),
-                calendar[Calendar.DAY_OF_MONTH]
-            )
+
 
             stateUI.value = UIState.Success(task)
         } catch (e: Exception) {

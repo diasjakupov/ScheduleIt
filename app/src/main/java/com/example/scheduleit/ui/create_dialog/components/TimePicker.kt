@@ -1,6 +1,5 @@
-package com.example.scheduleit.ui.components
+package com.example.scheduleit.ui.create_dialog.components
 
-import android.util.Log
 import android.widget.NumberPicker
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,14 +16,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scheduleit.data.viewModels.CreationFormViewModel
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
 @Composable
 fun TimePicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
     val hours = remember {
-        mutableStateOf(VM.minHour.value)
+        mutableStateOf(VM.minAvailableHourValue.value)
     }
     val minutes = remember {
         mutableStateOf(0)
@@ -44,7 +42,7 @@ fun TimePicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
                 ) {
                     AndroidView(factory = { context ->
                         val hourView = NumberPicker(context)
-                        hourView.minValue = VM.minHour.value
+                        hourView.minValue = VM.minAvailableHourValue.value
                         hourView.maxValue = 23
                         hourView.setFormatter {
                             String.format("%02d", it)

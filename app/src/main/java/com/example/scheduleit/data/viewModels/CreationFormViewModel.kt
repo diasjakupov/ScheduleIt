@@ -1,22 +1,19 @@
 package com.example.scheduleit.data.viewModels
 
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.scheduleit.data.models.Note
 import com.example.scheduleit.ui.wrappers.CalendarDateFormat
 import com.example.scheduleit.data.models.NotificationDelay
 import com.example.scheduleit.data.repository.NoteRepository
-import com.example.scheduleit.ui.state.UIState
+import com.example.scheduleit.ui.wrappers.OldNewDataHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -32,66 +29,82 @@ class CreationFormViewModel @Inject constructor(
         calendar.time = Date()
     }
 
+    //time variables
+    //for user experience
     private val _formattedPickedDate: MutableState<CalendarDateFormat> = mutableStateOf(
-        CalendarDateFormat(year = 0, monthName = "", day = 0)
+        CalendarDateFormat(year = 0, month = 0, day = 0)
     )
     val formattedPickedDate: State<CalendarDateFormat> get() = _formattedPickedDate
 
+    //date in long format without time
     private val _pickedDate: MutableState<Long> = mutableStateOf(0L)
-    val pickedDate: State<Long> get() = _pickedDate
+    private val pickedDate: State<Long> get() = _pickedDate
 
+    private val _hoursAndMinutesInMills: MutableState<Long> = mutableStateOf(0L)
+
+    private val _minAvailableHourValue = mutableStateOf(0)
+    val minAvailableHourValue: State<Int> get() = _minAvailableHourValue
+
+    private val _readableTimeRepresentation = mutableStateOf("00:00")
+
+    private val _selectedNotificationDelay: MutableState<Pair<String, Int>> =
+        mutableStateOf(NotificationDelay.NOTIFICATION_DELAY.first())
+    val selectedNotificationDelay: State<Pair<String, Int>> get() = _selectedNotificationDelay
+
+    val oldNewDataHolder: MutableState<OldNewDataHolder<Pair<Long?, String>>> = mutableStateOf(
+        OldNewDataHolder(null, null)
+    )
+
+    //text variables
     private val _title: MutableState<String?> = mutableStateOf(null)
     val title: State<String?> get() = _title
 
     private val _desc: MutableState<String> = mutableStateOf("")
     val desc: State<String> get() = _desc
 
-    private val _time: MutableState<Long> = mutableStateOf(0L)
-
-    private val _minHour = mutableStateOf(0)
-    val minHour: State<Int> get() = _minHour
-
-    private val _formattedTime = mutableStateOf("00:00")
-    val formattedTime: State<String> get() = _formattedTime
-
-    private val _selectedNotificationDelay: MutableState<Pair<String, Int>> =
-        mutableStateOf(NotificationDelay.NOTIFICATION_DELAY.first())
-    val selectedNotificationDelay: State<Pair<String, Int>> get() = _selectedNotificationDelay
 
     //setter
     fun setNewDate(year: Int, month: Int, day: Int) {
-        val format = SimpleDateFormat("MMM", Locale.getDefault())
         val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
         //set new value
         calendar.set(year, month, day, 0, 0, 0)
-
         //provide validation in case of selected date is identical to today's date
-        _minHour.value = setMinValueForHour(
-            today = day, selectedDay = calendar.get(Calendar.DAY_OF_YEAR),
+        _minAvailableHourValue.value = setMinValueForHour(
+            today = day, selectedDay = calendar.get(Calendar.DAY_OF_MONTH),
             hour = currentHour
         )
-        //
 
-        _formattedPickedDate.value = CalendarDateFormat(year, format.format(calendar.time), day)
         _pickedDate.value = calendar.timeInMillis
+        oldNewDataHolder.value = OldNewDataHolder(
+            old = oldNewDataHolder.value.old,
+            new = Pair(_pickedDate.value, _readableTimeRepresentation.value)
+        )
     }
 
-    fun setNewDate(date: Long){
+    fun setNewDate(date: Long) {
         calendar.time = Date(date)
 
         val year = calendar[Calendar.YEAR]
-        val day = calendar[Calendar.DAY_OF_YEAR]
-        val format = SimpleDateFormat("MMM", Locale.getDefault())
-        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+        val month = calendar[Calendar.MONTH]
+        val dayOfMonth = calendar[Calendar.DAY_OF_MONTH]
+        val currentHour = calendar[Calendar.HOUR_OF_DAY]
+        val minutes = calendar[Calendar.MINUTE]
 
 
-        _minHour.value = setMinValueForHour(
-            today = day, selectedDay = calendar.get(Calendar.DAY_OF_YEAR),
-            hour = currentHour
-        )
+        _minAvailableHourValue.value = currentHour
 
-        _formattedPickedDate.value = CalendarDateFormat(year, format.format(calendar.time), day)
+        _formattedPickedDate.value = CalendarDateFormat(year, month, dayOfMonth)
         _pickedDate.value = calendar.timeInMillis
+
+        _readableTimeRepresentation.value =
+            "${String.format("%02d", currentHour)}:${String.format("%02d", minutes)}"
+
+        oldNewDataHolder.value = OldNewDataHolder(
+            old = Pair(
+                date,
+                "${String.format("%02d", currentHour)}:${String.format("%02d", minutes)}"
+            ), new = null
+        )
     }
 
     fun setNewTitle(title: String) {
@@ -103,8 +116,15 @@ class CreationFormViewModel @Inject constructor(
     }
 
     fun setNewTime(hours: Int, minutes: Int) {
-        _formattedTime.value = "${String.format("%02d", hours)}:${String.format("%02d", minutes)}"
-        _time.value = (hours * 60 * 60 * 1000L) + (minutes * 60 * 1000L)
+        _readableTimeRepresentation.value =
+            "${String.format("%02d", hours)}:${String.format("%02d", minutes)}"
+        oldNewDataHolder.value =
+            OldNewDataHolder(
+                old = oldNewDataHolder.value.old,
+                new = oldNewDataHolder.value.new?.copy(second = _readableTimeRepresentation.value)
+                    ?: Pair(null, _readableTimeRepresentation.value)
+            )
+        _hoursAndMinutesInMills.value = (hours * 60 * 60 * 1000L) + (minutes * 60 * 1000L)
     }
 
     fun setNewNotificationDelay(delay: Pair<String, Int>) {
@@ -113,11 +133,17 @@ class CreationFormViewModel @Inject constructor(
 
 
     //formatter
-    override fun getDateRepresentation(format: String): String =
-        SimpleDateFormat(format, Locale.getDefault()).format(Date(pickedDate.value))
+    override fun getDateRepresentation(format: String): String {
+        return SimpleDateFormat(format, Locale.getDefault()).format(
+            Date(
+                oldNewDataHolder.value.new?.first ?: oldNewDataHolder.value.old?.first!!
+            )
+        )
+
+    }
 
 
-    fun submit(): Boolean {
+    fun submitNewTask(): Boolean {
         var valid = validation()
         if (valid) {
             try {
@@ -125,7 +151,7 @@ class CreationFormViewModel @Inject constructor(
                     repository.insertNewNote(
                         title = title.value!!,
                         description = desc.value,
-                        datetime = pickedDate.value + _time.value,
+                        datetime = pickedDate.value + _hoursAndMinutesInMills.value,
                         notificationDelay = selectedNotificationDelay.value.second,
                         status = false
                     )
@@ -137,13 +163,26 @@ class CreationFormViewModel @Inject constructor(
         return valid
     }
 
+    fun submitDateTime() {
+        _formattedPickedDate.value = CalendarDateFormat(
+            calendar[Calendar.YEAR],
+            calendar[Calendar.MONTH],
+            calendar[Calendar.DAY_OF_MONTH]
+        )
+        oldNewDataHolder.value.old = Pair(pickedDate.value, _readableTimeRepresentation.value)
+        oldNewDataHolder.value.new = null
+    }
+
+    fun cancelDateTime() {
+        oldNewDataHolder.value.new = null
+    }
+
     fun reset() {
-        val format = SimpleDateFormat("MMM", Locale.getDefault())
         val today = calendar.get(Calendar.DAY_OF_YEAR)
         val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
         _formattedPickedDate.value = CalendarDateFormat(
             year = calendar.get(Calendar.YEAR),
-            monthName = format.format(calendar.timeInMillis),
+            month = calendar[Calendar.MONTH],
             day = calendar.get(Calendar.DAY_OF_MONTH)
         )
         calendar.set(
@@ -157,10 +196,12 @@ class CreationFormViewModel @Inject constructor(
         _pickedDate.value = calendar.timeInMillis
         _title.value = null
         _desc.value = ""
-        _minHour.value = setMinValueForHour(
+        _minAvailableHourValue.value = setMinValueForHour(
             today = today, selectedDay = calendar.get(Calendar.DAY_OF_YEAR),
             hour = currentHour
         )
+
+        oldNewDataHolder.value.old = Pair(_pickedDate.value, "00:00")
     }
 
     private fun setMinValueForHour(hour: Int, today: Int, selectedDay: Int): Int {
@@ -172,7 +213,7 @@ class CreationFormViewModel @Inject constructor(
     }
 
     private fun validation(): Boolean {
-        val titleValidation =  title.value != ""
+        val titleValidation = title.value != ""
         val timeValidation = true // TODO(add proper time validation)
         return titleValidation && titleValidation
     }

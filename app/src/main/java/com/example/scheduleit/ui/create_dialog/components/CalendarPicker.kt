@@ -25,7 +25,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scheduleit.data.viewModels.CreationFormViewModel
-import com.example.scheduleit.ui.components.TimePicker
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -38,6 +37,7 @@ fun CalendarPicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
     val date = remember {
         mutableStateOf("")
     }
+
     Dialog(
         onDismissRequest = { onDismiss() }, properties = DialogProperties(
             dismissOnClickOutside = true,
@@ -74,7 +74,7 @@ fun CalendarPicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
                 }
                 AndroidView(factory = { context ->
                     val calendarView = CalendarView(context)
-                    calendarView.date = VM.pickedDate.value
+                    calendarView.date = VM.oldNewDataHolder.value.old?.first!!
                     calendarView.setOnDateChangeListener { _, year, month, day ->
                         VM.setNewDate(year, month, day)
                     }
@@ -101,7 +101,7 @@ fun CalendarPicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
                             }
                     ) {
                         Text(
-                            VM.formattedTime.value, style = TextStyle(
+                            VM.oldNewDataHolder.value.new?.second ?: VM.oldNewDataHolder.value.old?.second!!, style = TextStyle(
                                 fontSize = 20.sp, fontWeight = FontWeight(400)
                             )
                         )
@@ -117,7 +117,10 @@ fun CalendarPicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
                     Box(contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
-                            .clickable { onDismiss() }
+                            .clickable {
+                                onDismiss()
+                                VM.cancelDateTime()
+                            }
                             .padding(8.dp)) {
                         Text(
                             "Cancel", style = TextStyle(
@@ -129,7 +132,10 @@ fun CalendarPicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
                     Box(contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
-                            .clickable { onDismiss() }
+                            .clickable {
+                                onDismiss()
+                                VM.submitDateTime()
+                            }
                             .padding(8.dp)) {
                         Text(
                             "ok".uppercase(), style = TextStyle(
@@ -142,7 +148,7 @@ fun CalendarPicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
         }
     }
 
-    LaunchedEffect(key1 = VM.pickedDate.value, block = {
+    LaunchedEffect(key1 = VM.oldNewDataHolder.value, block = {
         date.value = VM.getDateRepresentation("MMMM d, y")
     })
 }

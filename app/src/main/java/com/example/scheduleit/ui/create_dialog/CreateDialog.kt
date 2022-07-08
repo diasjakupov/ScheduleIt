@@ -18,7 +18,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.scheduleit.data.viewModels.CreationFormViewModel
 import com.example.scheduleit.ui.components.*
 import com.example.scheduleit.ui.create_dialog.components.CalendarPicker
-import com.example.scheduleit.ui.state.UIState
 import com.example.scheduleit.ui.theme.Aqua
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
@@ -112,7 +111,7 @@ fun CreateDialog(VM: CreationFormViewModel = hiltViewModel(), onDismissRequest: 
                 //Footer
                 Button(
                     onClick = {
-                        isValid.value = VM.submit()
+                        isValid.value = VM.submitNewTask()
                         onDismissRequest()
                     },
                     shape = RectangleShape,
