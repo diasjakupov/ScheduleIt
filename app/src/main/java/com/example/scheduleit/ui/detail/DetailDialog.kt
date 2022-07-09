@@ -51,7 +51,15 @@ fun DetailDialog(
 
     LaunchedEffect(key1 = true, block = {
         detailVM.getTaskById(id)
-        creationVM.setNewDate(detailVM.date.value)
+    })
+
+    LaunchedEffect(key1 = detailVM.stateUI.value, block = {
+        when(val state: UIState<Note> = detailVM.stateUI.value){
+            is UIState.Success<Note>->{
+                creationVM.setTaskData(state.value)
+            }
+            else->{}
+        }
     })
 
 
@@ -89,12 +97,12 @@ fun DetailDialog(
                                         .background(color = Aqua)
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
-                                if(changeMod.value){
+                                if (changeMod.value) {
                                     CustomTextField(
                                         value = creationVM.title.value ?: "",
                                         placeholder = "Title",
                                         onValueChange = { creationVM.setNewTitle(it) })
-                                }else{
+                                } else {
                                     TaskHeader(
                                         title = state.value.title, textStyle = TextStyle(
                                             fontWeight = FontWeight(500),
@@ -109,18 +117,19 @@ fun DetailDialog(
                             CreateBtn(
                                 format = "d MMM kk:mm", textStyle = TextStyle(
                                     fontWeight = FontWeight.Normal, fontSize = 16.sp
-                                ), horizontal = Arrangement.Start, reversed = true, VM = detailVM
+                                ), horizontal = Arrangement.Start, reversed = true, VM = detailVM,
+                                date = state.value.datetime
                             ) {
                                 changeMod.value = true
                                 isDateEditBlockShown.value = true
                             }
                             Spacer(modifier = Modifier.height(10.dp))
-                            if(changeMod.value){
+                            if (changeMod.value) {
                                 CustomTextField(
                                     value = creationVM.desc.value,
                                     placeholder = "Description",
-                                    onValueChange = {creationVM.setNewDesc(it)})
-                            }else{
+                                    onValueChange = { creationVM.setNewDesc(it) })
+                            } else {
                                 Text(state.value.description, modifier = Modifier.clickable {
                                     changeMod.value = true
                                 })
@@ -148,10 +157,13 @@ fun DetailDialog(
                             }
                             Spacer(modifier = Modifier.height(16.dp))
                         }
-                        Row(modifier = Modifier.fillMaxWidth()){
-                            if(changeMod.value){
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            if (changeMod.value) {
                                 Button(
-                                    onClick = { changeMod.value = false/*TODO*/ },
+                                    onClick = {
+                                        changeMod.value = false
+                                        creationVM.update(state.value.id)
+                                              },
                                     modifier = Modifier.fillMaxWidth(0.5f),
                                     shape = RectangleShape,
                                     contentPadding = PaddingValues(14.dp),
@@ -163,8 +175,10 @@ fun DetailDialog(
                                     Text("edit".uppercase())
                                 }
                                 Button(
-                                    onClick = { changeMod.value = false
-                                                onDismiss()/*TODO*/ },
+                                    onClick = {
+                                        changeMod.value = false
+                                        onDismiss()/*TODO*/
+                                    },
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RectangleShape,
                                     contentPadding = PaddingValues(14.dp),
@@ -175,7 +189,7 @@ fun DetailDialog(
                                 ) {
                                     Text("cancel".uppercase())
                                 }
-                            }else{
+                            } else {
                                 Button(
                                     onClick = { onDismiss() /*TODO*/ },
                                     modifier = Modifier.fillMaxWidth(0.5f),
@@ -206,9 +220,10 @@ fun DetailDialog(
                     }
 
                     //for edit mode
-                    if(changeMod.value && isDateEditBlockShown.value){
+                    if (changeMod.value && isDateEditBlockShown.value) {
                         DateTimeEditBlock() {
                             changeMod.value = false
+                            isDateEditBlockShown.value = false
                         }
                     }
                 }
@@ -231,8 +246,6 @@ fun DetailDialog(
 
                 }
             }
-
-
         }
     }
 }

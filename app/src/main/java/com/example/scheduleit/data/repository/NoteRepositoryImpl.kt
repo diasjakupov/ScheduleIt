@@ -14,9 +14,6 @@ class NoteRepositoryImpl @Inject constructor(
     private val calendar: Calendar
 ) : NoteRepository {
 
-    init {
-        calendar.time = Date()
-    }
 
     override fun getAllNotesByDay(year:Int, month: Int, day:Int): Flow<List<Note>> {
         //start
@@ -40,5 +37,25 @@ class NoteRepositoryImpl @Inject constructor(
 
     override suspend fun getTaskByIdAsync(id: Int): Note {
         return localDataSource.getTaskByIdAsync(id)
+    }
+
+    override suspend fun updateTask(
+        id: Int,
+        title: String,
+        description: String,
+        datetime: Long,
+        notificationDelay: Int,
+        status: Boolean
+    ) {
+        localDataSource.updateTask(
+            Note(
+                id = id,
+                title = title,
+                description = description,
+                datetime = datetime,
+                notificationDelay = notificationDelay,
+                status = status
+            )
+        )
     }
 }

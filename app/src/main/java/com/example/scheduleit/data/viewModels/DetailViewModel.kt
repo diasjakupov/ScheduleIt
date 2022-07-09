@@ -21,24 +21,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val repository: NoteRepository,
-    private val calendar: Calendar
+    private val repository: NoteRepository
 ) : ViewModel(), IGetDateRepresentation {
     val stateUI: MutableState<UIState<Note>> = mutableStateOf(UIState.Loading())
 
-
-    val date = mutableStateOf(0L)
 
     suspend fun getTaskById(id: Int) {
         stateUI.value = UIState.Loading()
 
         try {
             val task = repository.getTaskByIdAsync(id)
-
-            calendar.time = Date(task.datetime)
-            date.value = task.datetime
-
-
             stateUI.value = UIState.Success(task)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -48,10 +40,10 @@ class DetailViewModel @Inject constructor(
     }
 
 
-    override fun getDateRepresentation(format: String): String {
-        return when (val state = stateUI.value) {
+    override fun getDateRepresentation(format: String, date: Long): String {
+        return when (stateUI.value) {
             is UIState.Success<Note> -> {
-                SimpleDateFormat(format, Locale.getDefault()).format(Date(state.value.datetime))
+                SimpleDateFormat(format, Locale.getDefault()).format(Date(date))
             }
             else -> {
                 ""

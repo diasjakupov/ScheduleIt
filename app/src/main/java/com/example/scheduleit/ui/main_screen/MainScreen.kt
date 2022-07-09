@@ -38,7 +38,7 @@ fun MainScreen(VM: MainScreenViewModel = hiltViewModel(), navController: NavCont
                 CreateBtn(format = "MMMM d, y", textStyle = TextStyle(
                     fontWeight = FontWeight(500),
                     fontSize = 30.sp
-                ), horizontal = Arrangement.SpaceBetween, VM = hiltViewModel<MainScreenViewModel>()) {
+                ), horizontal = Arrangement.SpaceBetween, VM = hiltViewModel<MainScreenViewModel>(), date = VM.getCurrentDate()) {
                     navController.navigate("create_dialog")
                 }
                 Spacer(

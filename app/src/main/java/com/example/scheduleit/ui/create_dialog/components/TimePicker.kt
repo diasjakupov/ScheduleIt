@@ -22,7 +22,7 @@ import com.example.scheduleit.ui.theme.ScheduleItTheme
 @Composable
 fun TimePicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
     val hours = remember {
-        mutableStateOf(VM.minAvailableHourValue.value)
+        mutableStateOf(0)
     }
     val minutes = remember {
         mutableStateOf(0)
@@ -42,7 +42,7 @@ fun TimePicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
                 ) {
                     AndroidView(factory = { context ->
                         val hourView = NumberPicker(context)
-                        hourView.minValue = VM.minAvailableHourValue.value
+                        hourView.minValue = 0
                         hourView.maxValue = 23
                         hourView.setFormatter {
                             String.format("%02d", it)

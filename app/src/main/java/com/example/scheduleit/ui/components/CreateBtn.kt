@@ -34,6 +34,7 @@ fun CreateBtn(
     horizontal: Arrangement.Horizontal,
     VM: IGetDateRepresentation,
     reversed: Boolean = false,
+    date: Long,
     onClick: () -> Unit
 ) {
 
@@ -41,7 +42,7 @@ fun CreateBtn(
         mutableStateOf("")
     }
     LaunchedEffect(key1 = true, block = {
-        currentDate.value = VM.getDateRepresentation(format)
+        currentDate.value = VM.getDateRepresentation(format, date)
     })
 
 
@@ -90,7 +91,7 @@ fun CreateBtnPreview() {
             format = "",
             textStyle = TextStyle(),
             horizontal = Arrangement.Start,
-            VM = hiltViewModel()
+            VM = hiltViewModel(), date = 0L
         ) {}
     }
 }

@@ -22,20 +22,21 @@ class MainScreenViewModel @Inject constructor(
     private val calendar: Calendar
 ) : ViewModel(), IGetDateRepresentation {
 
-    init{
+    init {
         calendar.time = Date()
     }
 
     private val timeFormatter = SimpleDateFormat("kk:mm", Locale.getDefault())
 
 
-    private fun getCurrentDate(): Long {
+    fun getCurrentDate(): Long {
         return calendar.timeInMillis
     }
 
-    override fun getDateRepresentation(format:String): String = SimpleDateFormat(format, Locale.getDefault()).format(
-        getCurrentDate()
-    )
+    override fun getDateRepresentation(format: String, date: Long): String =
+        SimpleDateFormat(format, Locale.getDefault()).format(
+            date
+        )
 
 
     fun getNoteList(): Flow<List<TaskForView>> {

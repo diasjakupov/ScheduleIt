@@ -10,7 +10,7 @@ import javax.inject.Inject
 class LocalDataSourceImpl @Inject constructor(
     private val noteDao: NoteDao
 ) : LocalDataSource {
-    override fun getAllNotesByDay(start: Long, end: Long): Flow<List<Note>> = noteDao.getAllNotesByDay(start, end)
+    override fun getAllNotesByDay(start: Long, end: Long): Flow<List<Note>> = noteDao.getAllTasksByDay(start, end)
     override suspend fun getTaskByIdAsync(id: Int): Note {
         return withContext(Dispatchers.IO){
             noteDao.getTaskByIdAsync(id)
@@ -23,7 +23,11 @@ class LocalDataSourceImpl @Inject constructor(
         datetime: Long,
         notificationDelay: Int, status: Boolean
     ) {
-        noteDao.insertNewNote(title, description, datetime, notificationDelay, status)
+        noteDao.insertNewTask(title, description, datetime, notificationDelay, status)
+    }
+
+    override suspend fun updateTask(task: Note) {
+        noteDao.updateTask(task)
     }
 
 }
