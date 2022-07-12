@@ -1,6 +1,7 @@
 package com.example.scheduleit.data.viewModels
 
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +22,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class CreationFormViewModel @Inject constructor(
+open class CreationFormViewModel @Inject constructor(
     private val repository: NoteRepository,
     private val calendar: Calendar
 ) : ViewModel(), IGetDateRepresentation {
@@ -51,9 +52,13 @@ class CreationFormViewModel @Inject constructor(
         mutableStateOf(NotificationDelay.NOTIFICATION_DELAY.first())
     val selectedNotificationDelay: State<Pair<String, Int>> get() = _selectedNotificationDelay
 
-    val oldNewDataHolderDateTime: MutableState<OldNewDataHolder<Pair<Long?, String>>> = mutableStateOf(
-        OldNewDataHolder(null, null)
-    )
+    val oldNewDataHolderDateTime: OldNewDataHolder<Pair<MutableState<Long?>, MutableState<String>>> =
+        OldNewDataHolder(
+            old = Pair(
+                mutableStateOf(0L), mutableStateOf("")
+            ), new = Pair(mutableStateOf(null), mutableStateOf(""))
+        )
+
 
     //text variables
     //TODO add old/new logic for these fields
@@ -65,6 +70,15 @@ class CreationFormViewModel @Inject constructor(
 
 
     //general
+    override fun getDateRepresentation(format: String, date: Long): String {
+        return SimpleDateFormat(format, Locale.getDefault()).format(
+            Date(
+                date
+            )
+        )
+
+    }
+
     fun setNewTitle(title: String) {
         _title.value = title
     }
@@ -76,26 +90,13 @@ class CreationFormViewModel @Inject constructor(
     fun setNewTime(hours: Int, minutes: Int) {
         _readableTimeRepresentation.value =
             "${String.format("%02d", hours)}:${String.format("%02d", minutes)}"
-        oldNewDataHolderDateTime.value =
-            OldNewDataHolder(
-                old = oldNewDataHolderDateTime.value.old,
-                new = oldNewDataHolderDateTime.value.new?.copy(second = _readableTimeRepresentation.value)
-                    ?: Pair(oldNewDataHolderDateTime.value.old?.first!!, _readableTimeRepresentation.value)
-            ) //set old to !! as i suppose to have old value no matter what
+        oldNewDataHolderDateTime.new.second.value = _readableTimeRepresentation.value
+        Log.e("TAG", "second ${oldNewDataHolderDateTime.new.second.value}")
         _hoursAndMinutesInMills.value = (hours * 60 * 60 * 1000L) + (minutes * 60 * 1000L)
     }
 
     fun setNewNotificationDelay(delay: Pair<String, Int>) {
         _selectedNotificationDelay.value = delay
-    }
-
-    override fun getDateRepresentation(format: String, date: Long): String {
-        return SimpleDateFormat(format, Locale.getDefault()).format(
-            Date(
-                date
-            )
-        )
-
     }
 
     fun submitNewTask(): Boolean {
@@ -124,12 +125,15 @@ class CreationFormViewModel @Inject constructor(
             calendar[Calendar.MONTH],
             calendar[Calendar.DAY_OF_MONTH]
         )
-        oldNewDataHolderDateTime.value.old = Pair(pickedDate.value, _readableTimeRepresentation.value)
-        oldNewDataHolderDateTime.value.new = null
+        oldNewDataHolderDateTime.old.first.value =
+            pickedDate.value + _hoursAndMinutesInMills.value
+        oldNewDataHolderDateTime.old.second.value = _readableTimeRepresentation.value
+
+        oldNewDataHolderDateTime.new = Pair(mutableStateOf(null), mutableStateOf(""))
     }
 
     fun cancelDateTime() {
-        oldNewDataHolderDateTime.value.new = null
+        oldNewDataHolderDateTime.new = Pair(mutableStateOf(null), mutableStateOf(""))
     }
 
     fun reset() {
@@ -156,7 +160,8 @@ class CreationFormViewModel @Inject constructor(
             hour = currentHour
         )
 
-        oldNewDataHolderDateTime.value.old = Pair(_pickedDate.value, "00:00")
+        oldNewDataHolderDateTime.old.first.value = _pickedDate.value
+        oldNewDataHolderDateTime.old.second.value = "00:00"
     }
 
     private fun setMinValueForHour(hour: Int, today: Int, selectedDay: Int): Int {
@@ -185,36 +190,12 @@ class CreationFormViewModel @Inject constructor(
         )
 
         _pickedDate.value = calendar.timeInMillis
-        oldNewDataHolderDateTime.value = OldNewDataHolder(
-            old = oldNewDataHolderDateTime.value.old,
-            new = Pair(_pickedDate.value, _readableTimeRepresentation.value)
-        )
+        oldNewDataHolderDateTime.new.first.value = _pickedDate.value
+        oldNewDataHolderDateTime.new.second.value = _readableTimeRepresentation.value
     }
 
 
     //detail
-    fun setTaskData(task: Note){
-        setNewTitle(task.title)
-        setNewDesc(task.description)
-        setNewNotificationDelay(NotificationDelay.NOTIFICATION_DELAY.filter {
-            it.second == task.notificationDelay
-        }[0])
-        setNewDate(task.datetime)
-    }
-
-    fun update(id: Int){
-        viewModelScope.launch(Dispatchers.IO){
-            repository.updateTask(
-                id = id,
-                title = title.value!!, //TODO add validation for empty title case
-                description = desc.value,
-                datetime = pickedDate.value + _hoursAndMinutesInMills.value,
-                notificationDelay = selectedNotificationDelay.value.second,
-                status = false //TODO add new field for status tracking and changing its value
-            )
-        }
-    }
-
     private fun setNewDate(date: Long) {
         calendar.time = Date(date)
 
@@ -223,6 +204,7 @@ class CreationFormViewModel @Inject constructor(
         val dayOfMonth = calendar[Calendar.DAY_OF_MONTH]
         val currentHour = calendar[Calendar.HOUR_OF_DAY]
         val minutes = calendar[Calendar.MINUTE]
+        calendar.set(year, month, dayOfMonth, 0, 0, 0)
 
 
         _minAvailableHourValue.value = currentHour
@@ -233,16 +215,47 @@ class CreationFormViewModel @Inject constructor(
         _readableTimeRepresentation.value =
             "${String.format("%02d", currentHour)}:${String.format("%02d", minutes)}"
 
-        oldNewDataHolderDateTime.value = OldNewDataHolder(
-            old = Pair(
-                date,
-                "${String.format("%02d", currentHour)}:${String.format("%02d", minutes)}"
-            ), new = null
-        )
+        oldNewDataHolderDateTime.old.first.value = date
+        oldNewDataHolderDateTime.old.second.value =
+            "${String.format("%02d", currentHour)}:${String.format("%02d", minutes)}"
+        oldNewDataHolderDateTime.new = Pair(mutableStateOf(null), mutableStateOf(""))
     }
 
+    fun setTaskData(task: Note) {
+        setNewTitle(task.title)
+        setNewDesc(task.description)
+        setNewNotificationDelay(NotificationDelay.NOTIFICATION_DELAY.filter {
+            it.second == task.notificationDelay
+        }[0])
+        setNewDate(task.datetime)
+    }
 
-    //formatter
+    fun setDefaultNotifDelay() {
+        _selectedNotificationDelay.value = NotificationDelay.NOTIFICATION_DELAY.first()
+    }
+
+    fun update(id: Int, status: Boolean, onTaskUpdated: suspend () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateTask(
+                id = id,
+                title = title.value!!, //TODO add validation for empty title case
+                description = desc.value,
+                datetime = pickedDate.value + _hoursAndMinutesInMills.value,
+                notificationDelay = selectedNotificationDelay.value.second,
+                status = status //TODO add new field for status tracking and changing its value
+            )
+            onTaskUpdated()
+        }
+    }
+
+    fun setStatusCompletion(id: Int, status: Boolean, onTaskUpdated: suspend () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            //set opposite value of status
+            repository.updateStatus(!status, id)
+            onTaskUpdated()
+        }
+    }
+
 
 }
 

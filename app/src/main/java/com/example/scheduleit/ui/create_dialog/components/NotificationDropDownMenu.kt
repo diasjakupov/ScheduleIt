@@ -19,6 +19,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scheduleit.data.models.NotificationDelay
@@ -44,27 +45,29 @@ fun NotificationDropDownMenu(VM: CreationFormViewModel = hiltViewModel()) {
             })
         Divider()
         if (expanded.value) {
-            Surface(elevation = 1.dp, modifier = Modifier.fillMaxWidth()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(2.dp)
-                ) {
-                    items(NotificationDelay.NOTIFICATION_DELAY) { item ->
-                        Text(
-                            item.first, style = TextStyle(
-                                fontWeight = FontWeight(600),
-                                fontSize = 18.sp
-                            ), modifier = Modifier
-                                .padding(top = 8.dp)
-                                .fillMaxWidth()
-                                .clickable {
-                                    VM.setNewNotificationDelay(item)
-                                    expanded.value = !expanded.value
-                                }
-                        )
-                        Divider()
-                    }
+            Popup() {
+                Surface(elevation = 1.dp, modifier = Modifier.fillMaxWidth()) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(2.dp)
+                    ) {
+                        items(NotificationDelay.NOTIFICATION_DELAY) { item ->
+                            Text(
+                                item.first, style = TextStyle(
+                                    fontWeight = FontWeight(600),
+                                    fontSize = 18.sp
+                                ), modifier = Modifier
+                                    .padding(top = 8.dp)
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        VM.setNewNotificationDelay(item)
+                                        expanded.value = !expanded.value
+                                    }
+                            )
+                            Divider()
+                        }
 
+                    }
                 }
             }
         }

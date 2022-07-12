@@ -33,6 +33,7 @@ import com.example.scheduleit.ui.components.Loader
 import com.example.scheduleit.ui.components.TaskHeader
 import com.example.scheduleit.ui.state.UIState
 import com.example.scheduleit.ui.theme.Aqua
+import com.example.scheduleit.ui.theme.SuccessStatus
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -54,11 +55,11 @@ fun DetailDialog(
     })
 
     LaunchedEffect(key1 = detailVM.stateUI.value, block = {
-        when(val state: UIState<Note> = detailVM.stateUI.value){
-            is UIState.Success<Note>->{
+        when (val state: UIState<Note> = detailVM.stateUI.value) {
+            is UIState.Success<Note> -> {
                 creationVM.setTaskData(state.value)
             }
-            else->{}
+            else -> {}
         }
     })
 
@@ -114,15 +115,36 @@ fun DetailDialog(
                                 }
 
                             }
-                            CreateBtn(
-                                format = "d MMM kk:mm", textStyle = TextStyle(
-                                    fontWeight = FontWeight.Normal, fontSize = 16.sp
-                                ), horizontal = Arrangement.Start, reversed = true, VM = detailVM,
-                                date = state.value.datetime
-                            ) {
-                                changeMod.value = true
-                                isDateEditBlockShown.value = true
+                            if (changeMod.value) {
+                                CreateBtn(
+                                    format = "d MMM kk:mm",
+                                    textStyle = TextStyle(
+                                        fontWeight = FontWeight.Normal, fontSize = 16.sp
+                                    ),
+                                    horizontal = Arrangement.Start,
+                                    reversed = true,
+                                    VM = detailVM,
+                                    date = creationVM.oldNewDataHolderDateTime.old.first.value!!
+                                ) {
+                                    changeMod.value = true
+                                    isDateEditBlockShown.value = true
+                                }
+                            } else {
+                                CreateBtn(
+                                    format = "d MMM kk:mm",
+                                    textStyle = TextStyle(
+                                        fontWeight = FontWeight.Normal, fontSize = 16.sp
+                                    ),
+                                    horizontal = Arrangement.Start,
+                                    reversed = true,
+                                    VM = detailVM,
+                                    date = state.value.datetime
+                                ) {
+                                    changeMod.value = true
+                                    isDateEditBlockShown.value = true
+                                }
                             }
+
                             Spacer(modifier = Modifier.height(10.dp))
                             if (changeMod.value) {
                                 CustomTextField(
@@ -141,7 +163,7 @@ fun DetailDialog(
                                     imageVector = Icons.Outlined.Done,
                                     contentDescription = "Done Icon",
                                     tint = if (state.value.status) {
-                                        Color.Green
+                                        SuccessStatus
                                     } else {
                                         Color.Gray
                                     },
@@ -149,7 +171,7 @@ fun DetailDialog(
                                 )
                                 Text(
                                     "Completed", color = if (state.value.status) {
-                                        Color.Green
+                                        SuccessStatus
                                     } else {
                                         Color.LightGray
                                     }
@@ -162,8 +184,10 @@ fun DetailDialog(
                                 Button(
                                     onClick = {
                                         changeMod.value = false
-                                        creationVM.update(state.value.id)
-                                              },
+                                        creationVM.update(state.value.id, state.value.status) {
+                                            detailVM.getTaskById(state.value.id)
+                                        }
+                                    },
                                     modifier = Modifier.fillMaxWidth(0.5f),
                                     shape = RectangleShape,
                                     contentPadding = PaddingValues(14.dp),
@@ -190,20 +214,52 @@ fun DetailDialog(
                                     Text("cancel".uppercase())
                                 }
                             } else {
-                                Button(
-                                    onClick = { onDismiss() /*TODO*/ },
-                                    modifier = Modifier.fillMaxWidth(0.5f),
-                                    shape = RectangleShape,
-                                    contentPadding = PaddingValues(14.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Color.Green,
-                                        contentColor = Color.White
-                                    )
-                                ) {
-                                    Text("done".uppercase())
+                                if (state.value.status) {
+                                    Button(
+                                        onClick = {
+                                            creationVM.setStatusCompletion(
+                                                status = state.value.status,
+                                                id = state.value.id
+                                            ) {
+                                                detailVM.getTaskById(state.value.id)
+                                            }
+                                        },
+                                        modifier = Modifier.fillMaxWidth(0.5f),
+                                        shape = RectangleShape,
+                                        contentPadding = PaddingValues(14.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = Color.Gray,
+                                            contentColor = Color.White
+                                        )
+                                    ) {
+                                        Text("to do".uppercase())
+                                    }
+                                } else {
+                                    Button(
+                                        onClick = {
+                                            creationVM.setStatusCompletion(
+                                                status = state.value.status,
+                                                id = state.value.id
+                                            ) {
+                                                detailVM.getTaskById(state.value.id)
+                                            }
+                                        },
+                                        modifier = Modifier.fillMaxWidth(0.5f),
+                                        shape = RectangleShape,
+                                        contentPadding = PaddingValues(14.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = Color.Green,
+                                            contentColor = Color.White
+                                        )
+                                    ) {
+                                        Text("done".uppercase())
+                                    }
                                 }
                                 Button(
-                                    onClick = { onDismiss() /*TODO*/ },
+                                    onClick = {
+                                        onDismiss()
+                                        detailVM.deleteByID(state.value.id)
+                                    },
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RectangleShape,
                                     contentPadding = PaddingValues(14.dp),
@@ -221,10 +277,12 @@ fun DetailDialog(
 
                     //for edit mode
                     if (changeMod.value && isDateEditBlockShown.value) {
-                        DateTimeEditBlock() {
-                            changeMod.value = false
+                        DateTimeEditBlock(onDismiss = {
                             isDateEditBlockShown.value = false
-                        }
+                        }, onCancel = {
+                            isDateEditBlockShown.value = false
+                            creationVM.setDefaultNotifDelay()
+                        })
                     }
                 }
 

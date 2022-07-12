@@ -73,7 +73,7 @@ fun CalendarPicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
                 }
                 AndroidView(factory = { context ->
                     val calendarView = CalendarView(context)
-                    calendarView.date = VM.oldNewDataHolderDateTime.value.old?.first!!
+                    calendarView.date = VM.oldNewDataHolderDateTime.old.first.value!!
                     calendarView.setOnDateChangeListener { _, year, month, day ->
                         VM.setNewDate(year, month, day)
                     }
@@ -100,10 +100,11 @@ fun CalendarPicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
                             }
                     ) {
                         Text(
-                            VM.oldNewDataHolderDateTime.value.new?.second ?: VM.oldNewDataHolderDateTime.value.old?.second!!, style = TextStyle(
-                                fontSize = 20.sp, fontWeight = FontWeight(400)
-                            )
+                            text = VM.oldNewDataHolderDateTime.new.second.value.ifEmpty {
+                                VM.oldNewDataHolderDateTime.old.second.value
+                            }, fontSize = 20.sp, fontWeight = FontWeight(400)
                         )
+
                     }
 
                 }
@@ -147,11 +148,17 @@ fun CalendarPicker(VM: CreationFormViewModel, onDismiss: () -> Unit) {
         }
     }
 
-    LaunchedEffect(key1 = VM.oldNewDataHolderDateTime.value, block = {
-        if(VM.oldNewDataHolderDateTime.value.new == null){
-            date.value = VM.getDateRepresentation("MMMM d, y", VM.oldNewDataHolderDateTime.value.old?.first!!)
-        }else{
-            date.value = VM.getDateRepresentation("MMMM d, y", VM.oldNewDataHolderDateTime.value.new?.first!!)
+    LaunchedEffect(key1 = VM.oldNewDataHolderDateTime.new.first.value, block = {
+        if (VM.oldNewDataHolderDateTime.new.first.value == null) {
+            date.value = VM.getDateRepresentation(
+                "MMMM d, y",
+                VM.oldNewDataHolderDateTime.old.first.value!!
+            )
+        } else {
+            date.value = VM.getDateRepresentation(
+                "MMMM d, y",
+                VM.oldNewDataHolderDateTime.new.first.value!!
+            )
         }
     })
 }

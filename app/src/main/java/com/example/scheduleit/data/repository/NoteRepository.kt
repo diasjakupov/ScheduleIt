@@ -14,4 +14,6 @@ interface NoteRepository {
                            datetime: Long,
                            notificationDelay: Int,
                            status: Boolean)
+    suspend fun updateStatus(value:Boolean, id: Int)
+    suspend fun deleteByID(id: Int)
 }

@@ -3,6 +3,7 @@ package com.example.scheduleit.data.repository
 import com.example.scheduleit.data.datasource.LocalDataSource
 import com.example.scheduleit.data.models.Note
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 import javax.inject.Inject
@@ -15,13 +16,13 @@ class NoteRepositoryImpl @Inject constructor(
 ) : NoteRepository {
 
 
-    override fun getAllNotesByDay(year:Int, month: Int, day:Int): Flow<List<Note>> {
+    override fun getAllNotesByDay(year: Int, month: Int, day: Int): Flow<List<Note>> {
         //start
-        calendar.set(year, month, day, 0, 0 ,0)
+        calendar.set(year, month, day, 0, 0, 0)
         val start = calendar.timeInMillis
 
         //end
-        calendar.set(year, month, day, 23, 59 ,59)
+        calendar.set(year, month, day, 23, 59, 59)
         val end = calendar.timeInMillis
         return localDataSource.getAllNotesByDay(start, end)
     }
@@ -36,6 +37,7 @@ class NoteRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTaskByIdAsync(id: Int): Note {
+        delay(500L)
         return localDataSource.getTaskByIdAsync(id)
     }
 
@@ -57,5 +59,13 @@ class NoteRepositoryImpl @Inject constructor(
                 status = status
             )
         )
+    }
+
+    override suspend fun updateStatus(value: Boolean, id: Int) {
+        localDataSource.updateStatus(value, id)
+    }
+
+    override suspend fun deleteByID(id: Int) {
+        localDataSource.deleteByID(id)
     }
 }

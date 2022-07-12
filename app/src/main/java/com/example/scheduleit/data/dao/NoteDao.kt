@@ -1,6 +1,7 @@
 package com.example.scheduleit.data.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Update
 import com.example.scheduleit.data.models.Note
@@ -25,4 +26,10 @@ interface NoteDao {
 
     @Update()
     suspend fun updateTask(task: Note)
+
+    @Query("UPDATE note SET status = :status WHERE id = :id")
+    suspend fun updateStatus(status:Boolean, id:Int)
+
+    @Query("DELETE FROM note WHERE id = :id")
+    suspend fun deleteByID(id:Int)
 }

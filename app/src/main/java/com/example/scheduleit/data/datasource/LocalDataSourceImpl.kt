@@ -30,4 +30,12 @@ class LocalDataSourceImpl @Inject constructor(
         noteDao.updateTask(task)
     }
 
+    override suspend fun updateStatus(value: Boolean, id: Int) {
+        noteDao.updateStatus(value, id)
+    }
+
+    override suspend fun deleteByID(id: Int) {
+        noteDao.deleteByID(id)
+    }
+
 }

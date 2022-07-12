@@ -9,4 +9,6 @@ interface LocalDataSource {
     suspend fun getTaskByIdAsync(id:Int): Note
     suspend fun insertNewNote(title: String, description: String, datetime: Long, notificationDelay: Int, status: Boolean)
     suspend fun updateTask(task: Note)
+    suspend fun updateStatus(value:Boolean, id:Int)
+    suspend fun deleteByID(id: Int)
 }

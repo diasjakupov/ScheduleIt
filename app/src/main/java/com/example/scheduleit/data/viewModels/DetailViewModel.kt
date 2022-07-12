@@ -25,7 +25,6 @@ class DetailViewModel @Inject constructor(
 ) : ViewModel(), IGetDateRepresentation {
     val stateUI: MutableState<UIState<Note>> = mutableStateOf(UIState.Loading())
 
-
     suspend fun getTaskById(id: Int) {
         stateUI.value = UIState.Loading()
 
@@ -39,6 +38,11 @@ class DetailViewModel @Inject constructor(
 
     }
 
+    fun deleteByID(id:Int){
+        viewModelScope.launch {
+            repository.deleteByID(id)
+        }
+    }
 
     override fun getDateRepresentation(format: String, date: Long): String {
         return when (stateUI.value) {
