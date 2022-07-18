@@ -13,7 +13,8 @@ import com.example.scheduleit.data.viewModels.CreationFormViewModel
 import com.example.scheduleit.data.viewModels.DetailViewModel
 import com.example.scheduleit.ui.create_dialog.CreateDialog
 import com.example.scheduleit.ui.detail.DetailDialog
-import com.example.scheduleit.ui.main_screen.DailyScreen
+import com.example.scheduleit.ui.daily_screen.DailyScreen
+import com.example.scheduleit.ui.month_screen.MonthScreen
 
 
 @ExperimentalComposeUiApi
@@ -23,8 +24,9 @@ fun NavigationComposable(navController: NavHostController) {
         composable(NavigationRoutes.DailyScreen.route) {
             DailyScreen(navController = navController)
         }
-        composable(NavigationRoutes.MonthScreen.route){}
-
+        composable(NavigationRoutes.MonthScreen.route){
+            MonthScreen()
+        }
         dialog(
             route = NavigationRoutes.DetailScreenDialog.route,
             arguments = listOf(navArgument("taskId") {

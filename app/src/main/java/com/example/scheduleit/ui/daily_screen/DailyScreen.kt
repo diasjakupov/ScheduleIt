@@ -1,4 +1,4 @@
-package com.example.scheduleit.ui.main_screen
+package com.example.scheduleit.ui.daily_screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*

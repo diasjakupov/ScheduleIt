@@ -1,5 +1,8 @@
 package com.example.scheduleit.ui.navigation.topbar
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -39,7 +42,8 @@ fun TabsRow(navHostController: NavHostController) {
             arrayOf(
                 TabPath(name = "Monthly", path = NavigationRoutes.MonthScreen.route),
                 TabPath(name = "Daily", path = NavigationRoutes.DailyScreen.route)
-            ))
+            )
+        )
     }
 
     TabRow(
@@ -58,28 +62,29 @@ fun TabsRow(navHostController: NavHostController) {
                 onClick = {
                     navHostController.navigate(path.path)
                     selectedTabIndex.value = index
-                          },
+                },
                 interactionSource = interactionSource,
-                modifier = if (selectedTabIndex.value == index) {
-                    Modifier
-                        .clip(RoundedCornerShape(50.dp))
-                        .background(Aqua)
-                        .padding(top = 12.dp, bottom = 12.dp)
-
-                } else {
-                    Modifier
-                        .clip(RoundedCornerShape(50.dp))
-                        .background(MaterialTheme.colors.primary)
-                        .padding(top = 12.dp, bottom = 12.dp)
-
-                }
+                modifier = Modifier
+                    .clip(RoundedCornerShape(50.dp))
+                    .background(
+                        animateColorAsState(
+                            targetValue = if (selectedTabIndex.value == index) {
+                                Aqua
+                            } else {
+                                MaterialTheme.colors.primary
+                            }, animationSpec = tween(500)
+                        ).value
+                    )
+                    .padding(top = 12.dp, bottom = 12.dp)
             ) {
                 Text(
-                    text = path.name, color = if (selectedTabIndex.value == index) {
-                        Color.White
-                    } else {
-                        Color.Black
-                    }
+                    text = path.name, color = animateColorAsState( targetValue =
+                        if (selectedTabIndex.value == index) {
+                            Color.White
+                        } else {
+                            Color.Black
+                        }, animationSpec = tween(500)
+                    ).value
                 )
             }
         }
