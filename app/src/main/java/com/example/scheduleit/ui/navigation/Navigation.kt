@@ -13,19 +13,20 @@ import com.example.scheduleit.data.viewModels.CreationFormViewModel
 import com.example.scheduleit.data.viewModels.DetailViewModel
 import com.example.scheduleit.ui.create_dialog.CreateDialog
 import com.example.scheduleit.ui.detail.DetailDialog
-import com.example.scheduleit.ui.main_screen.MainScreen
+import com.example.scheduleit.ui.main_screen.DailyScreen
 
 
 @ExperimentalComposeUiApi
 @Composable
 fun NavigationComposable(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "main_screen") {
-        composable("main_screen") {
-            MainScreen(navController = navController)
+    NavHost(navController = navController, startDestination = NavigationRoutes.DailyScreen.route) {
+        composable(NavigationRoutes.DailyScreen.route) {
+            DailyScreen(navController = navController)
         }
+        composable(NavigationRoutes.MonthScreen.route){}
 
         dialog(
-            route = "detail_dialog/{taskId}",
+            route = NavigationRoutes.DetailScreenDialog.route,
             arguments = listOf(navArgument("taskId") {
                 type = NavType.IntType
             })
@@ -35,13 +36,12 @@ fun NavigationComposable(navController: NavHostController) {
                 detailVM = hiltViewModel<DetailViewModel>(),
                 creationVM = hiltViewModel<CreationFormViewModel>()
             ) {
-                navController.navigate("main_screen")
+                navController.navigate(NavigationRoutes.DailyScreen.route)
             }
         }
-        dialog("create_dialog") {
-            val creationViewModel = hiltViewModel<CreationFormViewModel>()
-            CreateDialog(VM = creationViewModel, ) {
-                navController.navigate("main_screen")
+        dialog(NavigationRoutes.CreateScreenDialog.route) {
+            CreateDialog(VM = hiltViewModel<CreationFormViewModel>()) {
+                navController.navigate(NavigationRoutes.DailyScreen.route)
             }
         }
     }

@@ -1,13 +1,11 @@
 package com.example.scheduleit.ui.main_screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,14 +17,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.scheduleit.data.viewModels.MainScreenViewModel
 import com.example.scheduleit.ui.components.CreateBtn
-import com.example.scheduleit.ui.create_dialog.CreateDialog
-import com.example.scheduleit.ui.detail.DetailDialog
+import com.example.scheduleit.ui.navigation.NavigationRoutes
 import com.example.scheduleit.ui.theme.ExtremeLightGrey
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
 @ExperimentalComposeUiApi
 @Composable
-fun MainScreen(VM: MainScreenViewModel = hiltViewModel(), navController: NavController) {
+fun DailyScreen(VM: MainScreenViewModel = hiltViewModel(), navController: NavController) {
     Surface() {
         Column(
             modifier = Modifier.padding(
@@ -39,7 +36,7 @@ fun MainScreen(VM: MainScreenViewModel = hiltViewModel(), navController: NavCont
                     fontWeight = FontWeight(500),
                     fontSize = 30.sp
                 ), horizontal = Arrangement.SpaceBetween, VM = hiltViewModel<MainScreenViewModel>(), date = VM.getCurrentDate()) {
-                    navController.navigate("create_dialog")
+                    navController.navigate(NavigationRoutes.CreateScreenDialog.route)
                 }
                 Spacer(
                     modifier = Modifier
@@ -50,7 +47,7 @@ fun MainScreen(VM: MainScreenViewModel = hiltViewModel(), navController: NavCont
             Surface(color = ExtremeLightGrey) {
                 Box(modifier = Modifier.padding(start = 48.dp, end = 48.dp)){
                     ItemList(VM, top = 18.dp, onClick = {
-                        navController.navigate("detail_dialog/${it}")
+                        navController.navigate(NavigationRoutes.DetailScreenDialog.withArgs(it))
                     })
                 }
             }
@@ -63,7 +60,7 @@ fun MainScreen(VM: MainScreenViewModel = hiltViewModel(), navController: NavCont
 @Preview
 fun MainScreenPreview() {
     ScheduleItTheme() {
-        MainScreen(viewModel(), rememberNavController())
+        DailyScreen(viewModel(), rememberNavController())
 
     }
 }

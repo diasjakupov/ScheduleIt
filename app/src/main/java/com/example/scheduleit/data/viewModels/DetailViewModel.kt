@@ -27,7 +27,6 @@ class DetailViewModel @Inject constructor(
 
     suspend fun getTaskById(id: Int) {
         stateUI.value = UIState.Loading()
-
         try {
             val task = repository.getTaskByIdAsync(id)
             stateUI.value = UIState.Success(task)
@@ -39,7 +38,7 @@ class DetailViewModel @Inject constructor(
     }
 
     fun deleteByID(id:Int){
-        viewModelScope.launch {
+        viewModelScope.launch() {
             repository.deleteByID(id)
         }
     }

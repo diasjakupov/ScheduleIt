@@ -1,4 +1,4 @@
-package com.example.scheduleit.ui.navigation
+package com.example.scheduleit.ui.navigation.topbar
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -10,10 +10,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 
 @Composable
-fun TopBar() {
+fun TopBar(navController: NavHostController) {
     Surface() {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -31,7 +33,7 @@ fun TopBar() {
                 )
             }
 
-            TabsRow()
+            TabsRow(navHostController = navController)
         }
     }
 }
@@ -41,7 +43,7 @@ fun TopBar() {
 @Preview
 fun TopBarPreview() {
     ScheduleItTheme() {
-        TopBar()
+        TopBar(rememberNavController())
     }
 
 }

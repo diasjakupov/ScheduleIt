@@ -1,4 +1,4 @@
-package com.example.scheduleit.ui.navigation
+package com.example.scheduleit.ui.navigation.topbar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.Interaction
@@ -13,30 +13,37 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.scheduleit.ui.navigation.NavigationRoutes
 import com.example.scheduleit.ui.theme.Aqua
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.map
 
 @Composable
-fun TabsRow() {
-    var selectedTabIndex by remember {
+fun TabsRow(navHostController: NavHostController) {
+    val selectedTabIndex = remember {
         mutableStateOf(1)
     }
-    val interactionSource = remember { object : MutableInteractionSource{
-        override val interactions: Flow<Interaction>
-            get() = emptyFlow()
+    val interactionSource = remember {
+        object : MutableInteractionSource {
+            override val interactions: Flow<Interaction>
+                get() = emptyFlow()
 
-        override suspend fun emit(interaction: Interaction) {}
-        override fun tryEmit(interaction: Interaction): Boolean = true
-    }}
-
-    val tabs by remember {
-        mutableStateOf(arrayOf("Monthly", "Daily"))
+            override suspend fun emit(interaction: Interaction) {}
+            override fun tryEmit(interaction: Interaction): Boolean = true
+        }
+    }
+    val tabs = remember {
+        mutableStateOf(
+            arrayOf(
+                TabPath(name = "Monthly", path = NavigationRoutes.MonthScreen.route),
+                TabPath(name = "Daily", path = NavigationRoutes.DailyScreen.route)
+            ))
     }
 
     TabRow(
-        selectedTabIndex = selectedTabIndex,
+        selectedTabIndex = selectedTabIndex.value,
         backgroundColor = MaterialTheme.colors.primary,
         modifier = Modifier
             .padding(top = 8.dp, start = 48.dp, end = 48.dp, bottom = 8.dp)
@@ -45,12 +52,15 @@ fun TabsRow() {
         divider = {}
 
     ) {
-        tabs.forEachIndexed { index, text ->
+        tabs.value.forEachIndexed { index, path ->
             Tab(
-                selected = selectedTabIndex == index,
-                onClick = { selectedTabIndex = index },
+                selected = selectedTabIndex.value == index,
+                onClick = {
+                    navHostController.navigate(path.path)
+                    selectedTabIndex.value = index
+                          },
                 interactionSource = interactionSource,
-                modifier = if (selectedTabIndex == index) {
+                modifier = if (selectedTabIndex.value == index) {
                     Modifier
                         .clip(RoundedCornerShape(50.dp))
                         .background(Aqua)
@@ -65,7 +75,7 @@ fun TabsRow() {
                 }
             ) {
                 Text(
-                    text = text, color = if (selectedTabIndex == index) {
+                    text = path.name, color = if (selectedTabIndex.value == index) {
                         Color.White
                     } else {
                         Color.Black
@@ -81,5 +91,5 @@ fun TabsRow() {
 @Composable
 @Preview
 fun TabsRowPreview() {
-    TabsRow()
+    TabsRow(rememberNavController())
 }

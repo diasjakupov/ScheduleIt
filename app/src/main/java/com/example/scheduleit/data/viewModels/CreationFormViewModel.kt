@@ -242,7 +242,7 @@ open class CreationFormViewModel @Inject constructor(
                 description = desc.value,
                 datetime = pickedDate.value + _hoursAndMinutesInMills.value,
                 notificationDelay = selectedNotificationDelay.value.second,
-                status = status //TODO add new field for status tracking and changing its value
+                status = status
             )
             onTaskUpdated()
         }

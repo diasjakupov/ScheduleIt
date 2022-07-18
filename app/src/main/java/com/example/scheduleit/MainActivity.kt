@@ -1,18 +1,15 @@
 package com.example.scheduleit
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.scheduleit.data.viewModels.CreationFormViewModel
 import com.example.scheduleit.ui.navigation.NavigationComposable
-import com.example.scheduleit.ui.navigation.TopBar
+import com.example.scheduleit.ui.navigation.topbar.TopBar
 import com.example.scheduleit.ui.theme.ScheduleItTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,7 +24,7 @@ class MainActivity : ComponentActivity() {
             ScheduleItTheme {
                 // A surface container using the 'background' color from the theme
                 Scaffold(topBar = {
-                    TopBar()
+                    TopBar(navController = navHostController)
                 }) {
                     NavigationComposable(navController = navHostController)
                 }
@@ -41,6 +38,6 @@ class MainActivity : ComponentActivity() {
 @Preview
 @Composable
 fun PreviewActivity() {
-    TopBar()
+    TopBar(navController = rememberNavController())
     NavigationComposable(navController = rememberNavController())
 }
